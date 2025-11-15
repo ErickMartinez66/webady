@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Essence - Perfumes Premium</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            background-color: #f8f8f8;
+            color: #333;
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, #8B4513, #D2691E);
+            color: white;
+            padding: 1rem 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #FFD700;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: #FFD700;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), 
+                        url('https://images.unsplash.com/photo-1547887537-6158d64c35b3?ixlib=rb-4.0.3');
+            background-size: cover;
+            background-position: center;
+            height: 70vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+        }
+
+        .hero-content h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .hero-content p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+        }
+
+        .cta-button {
+            background: #FFD700;
+            color: #8B4513;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .cta-button:hover {
+            transform: scale(1.05);
+        }
+
+        /* Productos */
+        .productos {
+            max-width: 1200px;
+            margin: 4rem auto;
+            padding: 0 2rem;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            color: #8B4513;
+        }
+
+        .productos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+
+        .producto-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        .producto-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+
+        .producto-img {
+            width: 100%;
+            height: 250px;
+            background: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+        }
+
+        .producto-info {
+            padding: 1.5rem;
+        }
+
+        .producto-nombre {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: #8B4513;
+        }
+
+        .producto-desc {
+            color: #666;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .producto-precio {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #D2691E;
+            margin-bottom: 1rem;
+        }
+
+        .producto-link {
+            display: inline-block;
+            color: #8B4513;
+            font-weight: bold;
+            margin-top: 0.5rem;
+            text-decoration: underline;
+        }
+
+        /* Footer */
+        footer {
+            background: #333;
+            color: white;
+            padding: 3rem 0 1rem;
+            margin-top: 4rem;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .footer-section h3 {
+            color: #FFD700;
+            margin-bottom: 1rem;
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-section a {
+            color: #ccc;
+            text-decoration: none;
+        }
+
+        .footer-section a:hover {
+            color: #FFD700;
+        }
+
+        .copyright {
+            text-align: center;
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid #555;
+            color: #ccc;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <nav class="navbar">
+            <div class="logo">Esencia</div>
+            <ul class="nav-links">
+                <li><a href="#inicio">Inicio</a></li>
+                <li><a href="#productos">Productos</a></li>
+                <li><a href="#marcas">Marcas</a></li>
+                <li><a href="#contacto">Contacto</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero" id="inicio">
+        <div class="hero-content">
+            <h1>Descubre Tu Esencia</h1>
+            <p>Perfumerias Ady</p>
+            <button class="cta-button">Explorar Colección</button>
+        </div>
+    </section>
+
+    <!-- Productos -->
+    <section class="productos" id="productos">
+        <h2 class="section-title">Nuestros Productos Destacados</h2>
+        <div class="productos-grid">
+            <!-- Producto 1 -->
+            <a href="{% url 'perfumes' %}" class="producto-card">
+                <div class="producto-img">🌸</div>
+                <div class="producto-info">
+                    <h3 class="producto-nombre">Perfumes</h3>
+                    <p class="producto-desc">Fragancia y colonias de diferentes tipos </p>
+                    <span class="producto-link">Ver perfumes</span>
+                </div>
+            </a>
+
+             <a href="{% url 'desodorantes' %}" class="producto-card">
+                <div class="producto-img">🌸</div>
+                <div class="producto-info">
+                    <h3 class="producto-nombre">desodorantes</h3>
+                    <p class="producto-desc">En barra , en gel y espray </p>
+                    <span class="producto-link">Ver desodorantes</span>
+                </div>
+            </a>
+
+            <!-- Producto 3 -->
+            <a href="{% url 'cremas' %}" class="producto-card">
+                <div class="producto-img">🔥</div>
+                <div class="producto-info">
+                    <h3 class="producto-nombre">cremas</h3>
+                    <p class="producto-desc">Cremas idratantespara la piel y otros tipos</p>
+                    <span class="producto-link">Ver cremas</span>
+                </div>
+            </a>
+
+            <!-- Producto 4 -->
+            <a href="producto-citrus-fresh.html" class="producto-card">
+                <div class="producto-img">🍋</div>
+                <div class="producto-info">
+                    <h3 class="producto-nombre">Citrus Fresh</h3>
+                    <p class="producto-desc">Energizante combinación de cítricos y hierbas</p>
+                    <div class="producto-precio">$69.99</div>
+                    <span class="producto-link">Ver detalles</span>
+                </div>
+            </a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Esencia</h3>
+                <p>Tu destino para fragancias exclusivas y perfumes de lujo desde 2025.</p>
+            </div>
+            
+            <div class="footer-section">
+                <h3>Enlaces Rápidos</h3>
+                <ul>
+                    <li><a href="#inicio">Inicio</a></li>
+                    <li><a href="#productos">Productos</a></li>
+                    <li><a href="#marcas">Marcas</a></li>
+                    <li><a href="#contacto">Contacto</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-section">
+                <h3>Contacto</h3>
+                <ul>
+                    <li>📞 54912292</li>
+                    <li>✉️ info@essence.com</li>
+                    <li>📍 micasa</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="copyright">
+            &copy; 2024 Essence Perfumes. Todos los derechos reservados.
+        </div>
+    </footer>
+
+    <script>
+        // JavaScript básico para interactividad
+        document.addEventListener('DOMContentLoaded', function() {
+            // Smooth scroll para enlaces
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                });
+            });
+
+            // CTA button
+            document.querySelector('.cta-button').addEventListener('click', function() {
+                document.querySelector('#productos').scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Panel de Administración - Esencias Exclusivas{% endblock %}</title>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --success: #27ae60;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+            --light: #ecf0f1;
+            --dark: #34495e;
+            --gray: #95a5a6;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .admin-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .admin-header {
+            background: var(--primary);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        .admin-header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .admin-header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+            margin-bottom: 15px;
+        }
+
+        .user-info {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            background: rgba(255,255,255,0.1);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+        }
+
+        .admin-nav {
+            background: var(--dark);
+            padding: 0;
+        }
+
+        .nav-tabs {
+            display: flex;
+            list-style: none;
+            flex-wrap: wrap;
+        }
+
+        .nav-tabs li {
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .nav-tabs a {
+            display: block;
+            padding: 20px;
+            color: white;
+            text-decoration: none;
+            text-align: center;
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+            font-weight: 500;
+        }
+
+        .nav-tabs a:hover, .nav-tabs a.active {
+            background: rgba(255,255,255,0.1);
+            border-bottom: 3px solid var(--secondary);
+        }
+
+        .tab-content {
+            padding: 30px;
+            min-height: 600px;
+        }
+
+        /* Mensajes de Django */
+        .alert {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        @media (max-width: 768px) {
+            .nav-tabs { flex-direction: column; }
+            .user-info { position: static; margin-top: 15px; }
+        }
+        li{
+         display:block
+         
+        }
+        ul{
+            display:flex;
+            flex-direction: column;
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <div class="admin-header">
+            <h1>{% block page_title %}🛍️ Panel de Administración{% endblock %}</h1>
+            <p>{% block page_subtitle %}Gestiona todos los productos de Esencias Exclusivas{% endblock %}</p>
+            <div class="user-info">
+                <strong>Usuario:</strong> {{ user.username }} | 
+               
+            </div>
+        </div>
+
+        <nav class="admin-nav">
+            <ul class="nav-tabs">
+                <li><a href="{% url 'dashboard' %}" class="nav-link">📊 Dashboard</a></li>
+                <li><a href="{% url 'gestionperfumes' %}" class="nav-link">💎 Perfumes</a></li>
+                <li><a href="{% url 'desodoadmin' %}" class="nav-link">🫧 Desodorates</a></li>
+                <li><a href="{% url 'cremasadmin' %}" class="nav-link">🧴 cremas</a></li>
+            </ul>
+        </nav>
+
+        <div class="tab-content">
+            <!-- Mensajes de Django -->
+            {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <!-- CONTENIDO PRINCIPAL -->
+            {% block content %}
+            {% endblock %}
+        </div>
+    </div>
+</body>
+</html>
