@@ -228,6 +228,114 @@
         background-color: rgb(207, 23, 23);
         color: white;
     }
+    /* Estilos generales para el modal */
+.modal {
+    display: none; /* Oculto por defecto */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5); /* Fondo oscuro semitransparente */
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Mostrar el modal cuando se active */
+.modal.active {
+    display: flex;
+}
+
+/* Contenedor del contenido del modal */
+.modal-content {
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Animación para el modal */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Estilo para los grupos de formulario */
+.form-group {
+    margin-bottom: 20px;
+}
+
+/* Etiquetas de los campos */
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #34495e; /* Color oscuro */
+}
+
+/* Campos de entrada */
+.form-control {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #ecf0f1;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: border-color 0.3s ease;
+}
+
+/* Efecto al enfocar los campos */
+.form-control:focus {
+    outline: none;
+    border-color: #3498db; /* Azul */
+}
+
+/* Botones dentro del modal */
+.action-buttons {
+    display: flex;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+/* Botón de guardar */
+.btn-success {
+    background: #27ae60; /* Verde */
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+/* Botón de cancelar */
+.btn-danger {
+    background: #e74c3c; /* Rojo */
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+/* Efecto hover para los botones */
+.btn-success:hover,
+.btn-danger:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
 </style>
 
 <!-- Debug temporal para ver qué datos llegan -->
@@ -300,27 +408,10 @@
     {% endfor %}
 
 <div class="action-buttons">
-    <button class="btn btn-primary" onclick="">
+    <button class="btn btn-primary" onclick="abrirModalCrearV()">
         ➕ Agregar viaje
     </button>
 
-<div id="modalViaje" class="modal">
-    <div class="modal-content">
-        <span class="close" onclick="cerrarModal()">&times;</span>
-        <h3>Agregar Nuevo Viaje</h3>
-        
-        <!-- Tu formulario Django aquí -->
-        <form method="POST" action="">
-            {% csrf_token %}
-            {{ form_viaje.as_p }}     
-            
-            <div class="modal-buttons">
-                <button type="submit" class="btn btn-success">Guardar</button>
-                <button type="button" class="btn btn-secondary" onclick="cerrarModal()">Cancelar</button>
-            </div>
-        </form>
-    </div>
-</div>    
     <button class="btn btn-success" onclick="">
         📊 Editar viaje 
     </button>
@@ -328,7 +419,26 @@
         📊 Eliminar viaje 
     </button>
 </div>
-
+<div id="modalViaje" class="modal">
+    <div class="modal-content">
+        <h2 id="modalTitulo" style="margin-bottom: 20px; color: #34495e;">Agregar Viaje</h2>
+        <form id="formViaje" method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="fechaViaje">Fecha del Viaje *</label>
+                <input type="date" id="fechaViaje" name="fecha" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="inversionViaje">Inversión *</label>
+                <input type="number" id="inversionViaje" name="inversion" class="form-control" step="0.01" min="0" required>
+            </div>
+            <div class="action-buttons">
+                <button type="submit" class="btn btn-success">💾 Guardar</button>
+                <button type="button" class="btn btn-danger" onclick="cerrarModalV()">❌ Cancelar</button>
+            </div>
+        </form>
+    </div>
+</div>
 <!-- Últimos productos agregados -->
 <h2>Últimos Productos Agregados</h2>
 <div class="products-table">
@@ -437,4 +547,70 @@
         </tbody>
     </table>
 </div>
+<script>
+function abrirModalCrearV() {
+    console.log("Abriendo modal para agregar viaje...");
+    document.getElementById('modalTitulo').textContent = 'Agregar Viaje';
+    document.getElementById('formViaje').reset();
+    document.getElementById('modalViaje').classList.add('active');
+}
+
+function cerrarModalV() {
+    document.getElementById('modalViaje').classList.remove('active');
+}
+
+// Event listener para el formulario
+const formViaje = document.getElementById('formViaje');
+if (formViaje) {
+    formViaje.addEventListener('submit', async function (e) {
+        e.preventDefault();
+
+        const fecha = document.getElementById('fechaViaje').value;
+        const inversion = document.getElementById('inversionViaje').value;
+
+        // Validación básica
+        if (!fecha || !inversion) {
+            alert('Por favor, completa todos los campos');
+            return;
+        }
+
+        try {
+            // Enviar datos a tu view
+            const response = await fetch('{% url "agregar_viaje" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({
+                    fecha: fecha,
+                    inversion: parseFloat(inversion)
+                })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                // Éxito - mostrar mensaje y recargar
+                alert(data.message);
+                cerrarModalV();
+                location.reload(); // Recargar para ver el nuevo viaje
+            } else {
+                // Error
+                alert(data.error || 'Error al guardar el viaje');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Error de conexión');
+        }
+    });
+}
+
+// Cerrar modal al hacer clic fuera
+document.getElementById('modalViaje').addEventListener('click', function(e) {
+    if (e.target === this) {
+        cerrarModalV();
+    }
+});
+</script>
 {% endblock %}

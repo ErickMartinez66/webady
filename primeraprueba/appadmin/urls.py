@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.conf import settings
 from django.conf.urls.static import static 
 from django.urls import path,include
-from .views import panel_control,gestion_perfumes,gestion_cremas,gestion_desodorantes,login_user
+from .views import panel_control,gestion_perfumes,gestion_cremas,gestion_desodorantes,login_user,agregar_viaje
 
 
 
@@ -18,6 +18,7 @@ urlpatterns = [
     path('gestionperfumes/', gestion_perfumes, name='gestionperfumes'),
     path('desodoadmin/', gestion_desodorantes, name='desodoadmin'),
     path('cremasadmin/',gestion_cremas, name='cremasadmin'),
+    path('agregar_viaje/',agregar_viaje, name='agregar_viaje'),
     
     
     

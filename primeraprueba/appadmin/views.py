@@ -6,7 +6,10 @@ from django.db.models import Sum, Count, Q
 from newapp.models import perfumes, desodorantes, cremas
 from .models import Viaje,Fuentes
 from django.contrib.auth import authenticate,login
-from .forms import formviaje,formfuente
+from .forms import formviaje
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+import json
 
 
 def login_user(request):
@@ -149,8 +152,23 @@ def gestion_cremas(request):
     
     return render(request, 'gestion_cremas.html', context)
 
+
+
+def agregar_viaje(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        fecha = data.get('fecha')
+        inversion = data.get('inversion')
+
+        if fecha and inversion:
+            viaje = Viaje.objects.create(fecha=fecha, inversion=inversion)
+            return JsonResponse({'message': 'Viaje creado exitosamente', 'viaje': {'fecha': viaje.fecha, 'inversion': viaje.inversion}})
+        else:
+            return JsonResponse({'error': 'Datos inválidos'}, status=400)
+
+    return JsonResponse({'error': 'Método no permitido'}, status=405)
         
-def mi_vista(request):
+#def mi_vista(request):
     # Creas cada formulario con un PREFIJO diferente
     form_viaje = formviaje(prefix="viaje")
     form_fuente = formfuente(prefix="fuente") 
