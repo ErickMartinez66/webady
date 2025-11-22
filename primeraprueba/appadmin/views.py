@@ -166,38 +166,45 @@ def agregar_viaje(request):
         else:
             return JsonResponse({'error': 'Datos inválidos'}, status=400)
 
-    return JsonResponse({'error': 'Método no permitido'}, status=405)
+    return JsonResponse({'error': 'Método no permitido'}, status=405),fecha
         
-#def mi_vista(request):
-    # Creas cada formulario con un PREFIJO diferente
-    form_viaje = formviaje(prefix="viaje")
-    form_fuente = formfuente(prefix="fuente") 
-    
-    
+def agregar_fuente(request):
     if request.method == 'POST':
-        # Determinas qué formulario se envió
-        if 'viaje-destino' in request.POST:  # Campo único del formulario de viaje
-            form_viaje = formviaje(request.POST, prefix="viaje")
-            if form_viaje.is_valid():
-                form_viaje.save()
-                
-        elif 'fuente-num' in request.POST:  # Campo único del formulario de hotel
-            form_fuente = formfuente(request.POST, prefix="fuente")
-            if form_fuente.is_valid():
-                form_fuente.save()
-  
+        data = json.loads(request.body)
+        ultimoviaje = Viaje.objects.last()
+        fechaF = ultimoviaje
+        fuente =data.get('fuente')
+        invertido= data.get('invertido')
 
-        
+        if fechaF and invertido:
+            fuente = Fuentes.objects.create(fechaF=fechaF,fuente=fuente,invertido=invertido)
+            return JsonResponse({'message': 'fuente creada exitosamente'})
+             
+        else:
+            return JsonResponse({'error': 'Datos inválidos'}, status=400)
 
-# Vistas para editar y eliminar (simplificadas por ahora)
+    return JsonResponse({'error': 'Método no permitido'}, status=405)
+    
 
-#def editar_perfume(request, perfume_id):
-   # perfume_obj = get_object_or_404(perfumes, id=perfume_id)
-    # Lógica de edición aquí
-   # return render(request, 'administracion/editar_perfume.html', {'perfume': perfume_obj})
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.shortcuts import get_object_or_404
 
-
-#def eliminar_perfume(request, perfume_id):
-   # perfume_obj = get_object_or_404(perfumes, id=perfume_id)
-    # Lógica de eliminación aquí
-   # return render(request, 'administracion/eliminar_perfume.html', {'perfume': perfume_obj})
+@csrf_exempt  # O maneja el CSRF token apropiadamente
+def eliminar_viaje(request, viaje_fecha):
+    if request.method == 'POST':  
+        try:
+            viaje = get_object_or_404(Viaje, fecha=viaje_fecha)
+            fecha_viaje = viaje.fecha
+            
+            viaje.delete()
+            
+           
+            
+        except Exception as e:
+            return JsonResponse({
+                'success': False,
+                'error': f'Error al eliminar: {str(e)}'
+            }, status=500)
+    
+    return JsonResponse({'error': 'Método no permitido'}, status=405)

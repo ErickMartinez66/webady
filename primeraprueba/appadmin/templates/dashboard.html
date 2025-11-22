@@ -336,6 +336,275 @@
     transform: translateY(-2px);
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
 }
+.modalF {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(5px);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 0.3s ease-out;
+}
+
+.modalF.active {
+    display: flex;
+}
+
+.modal-content {
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    padding: 40px;
+    border-radius: 20px;
+    width: 90%;
+    max-width: 480px;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Efecto de borde decorativo */
+.modal-content::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #3498db, #2ecc71, #e74c3c);
+}
+
+/* Título del modal */
+.modal-content h2 {
+    margin-bottom: 30px;
+    color: #2c3e50;
+    font-size: 1.8em;
+    font-weight: 700;
+    text-align: center;
+    position: relative;
+    padding-bottom: 15px;
+}
+
+.modal-content h2::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 25%;
+    width: 50%;
+    height: 3px;
+    background: linear-gradient(90deg, #3498db, #2ecc71);
+    border-radius: 2px;
+}
+
+/* Grupos de formulario */
+.form-group {
+    margin-bottom: 25px;
+    position: relative;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #34495e;
+    font-size: 0.95em;
+    transition: all 0.3s ease;
+}
+
+/* Campos de entrada */
+.form-control {
+    width: 100%;
+    padding: 14px 16px;
+    border: 2px solid #e1e8ed;
+    border-radius: 12px;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    background: #ffffff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: #3498db;
+    box-shadow: 0 4px 15px rgba(52, 152, 219, 0.2);
+    transform: translateY(-2px);
+}
+
+/* Placeholder con estilo */
+.form-control::placeholder {
+    color: #a0a0a0;
+    font-size: 0.9em;
+}
+
+/* Botones de acción */
+.action-buttons {
+    display: flex;
+    gap: 15px;
+    margin-top: 30px;
+    justify-content: center;
+}
+
+.btn {
+    padding: 14px 28px;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.95em;
+    min-width: 120px;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.btn-success {
+    background: linear-gradient(135deg, #2727aeff, #2e6bccff);
+    color: white;
+}
+
+.btn-success:hover {
+    background: linear-gradient(135deg, #2732a5ff, #113d63ff);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(7, 4, 153, 0.4);
+}
+
+.btn-danger {
+    background: linear-gradient(135deg, #e74c3c, #c0392b);
+    color: white;
+}
+
+.btn-danger:hover {
+    background: linear-gradient(135deg, #c0392b, #a93226);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(231, 76, 60, 0.4);
+}
+
+/* Efectos de focus para accesibilidad */
+.btn:focus {
+    outline: 3px solid rgba(52, 152, 219, 0.5);
+    outline-offset: 2px;
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9) translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Aplicar animación a los elementos del formulario */
+.form-group {
+    animation: slideIn 0.4s ease-out;
+}
+
+.form-group:nth-child(1) { animation-delay: 0.1s; }
+.form-group:nth-child(2) { animation-delay: 0.2s; }
+.action-buttons { animation-delay: 0.3s; }
+
+/* Responsive */
+@media (max-width: 768px) {
+    .modal-content {
+        padding: 30px 25px;
+        margin: 20px;
+        width: calc(100% - 40px);
+    }
+    
+    .action-buttons {
+        flex-direction: column;
+    }
+    
+    .btn {
+        width: 100%;
+    }
+    
+    .modal-content h2 {
+        font-size: 1.5em;
+    }
+}
+
+/* Efecto de carga para el botón */
+.btn.loading {
+    position: relative;
+    color: transparent;
+}
+
+.btn.loading::after {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border: 2px solid transparent;
+    border-top: 2px solid white;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Validación visual */
+.form-control.invalid {
+    border-color: #e74c3c;
+    box-shadow: 0 4px 15px rgba(231, 76, 60, 0.2);
+}
+
+.form-control.valid {
+    border-color: #27ae60;
+    box-shadow: 0 4px 15px rgba(39, 174, 96, 0.2);
+}
+
+/* Iconos decorativos opcionales */
+.form-group::before {
+    font-family: 'Font Awesome 5 Free';
+    font-weight: 900;
+    position: absolute;
+    right: 15px;
+    top: 38px;
+    color: #bdc3c7;
+    font-size: 1.1em;
+}
+
+/* Para el campo de fuentes */
+#fuentesfue::placeholder {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='16' height='16'%3E%3Cpath fill='%23bdc3c7' d='M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 0 1 0-5 2.5 2.5 0 0 1 0 5z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    padding-right: 35px;
+}
+
+/* Para el campo de inversión */
+#invertidofuente::placeholder {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='16' height='16'%3E%3Cpath fill='%23bdc3c7' d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1.41 16.09V20h-2.67v-1.93c-1.71-.36-3.16-1.46-3.27-3.4h1.96c.1 1.05.82 1.87 2.65 1.87 1.96 0 2.4-.98 2.4-1.59 0-.83-.44-1.61-2.67-2.14-2.48-.6-4.18-1.62-4.18-3.67 0-1.72 1.39-2.84 3.11-3.21V4h2.67v1.95c1.86.45 2.79 1.86 2.85 3.39H14.3c-.05-1.11-.64-1.87-2.22-1.87-1.5 0-2.4.68-2.4 1.64 0 .84.65 1.39 2.67 1.91 2.58.6 4.18 1.63 4.18 3.68 0 1.8-1.39 2.83-3.13 3.16z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    padding-right: 35px;
+}
 </style>
 
 <!-- Debug temporal para ver qué datos llegan -->
@@ -392,7 +661,7 @@
                 </tr>
             </thead>
             <tbody>
-                {% for fuente in viaje.fuentes.all %} <!--aqui claro pq tomo de ese viaje al que le esta haciendo el for el apunte a fuente -->
+                {% for fuente in viaje.fuentes.all %}
                 <tr>
                     <td>{{ fuente.fuente }}</td>
                     <td>${{ fuente.invertido }}</td>
@@ -402,21 +671,26 @@
         </table>
         
         <div class="inversion-total">
+            <button class="btn btn-success" onclick="">
+                📊 Editar viaje 
+            </button>
+            
+            <!-- Formulario para eliminar viaje -->
+            <form method="post" action="{% url 'eliminar_viaje' viaje.fecha %}" style="display: inline;">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger" onclick="return confirm('¿Estás seguro de que quieres eliminar el viaje del {{ viaje.fecha }}?')">
+                    🗑️ Eliminar viaje 
+                </button>
+            </form>
+            
             Inversión Total del Viaje: ${{ viaje.inversion }}
         </div>
     </div>
-    {% endfor %}
+{% endfor %}
 
 <div class="action-buttons">
     <button class="btn btn-primary" onclick="abrirModalCrearV()">
         ➕ Agregar viaje
-    </button>
-
-    <button class="btn btn-success" onclick="">
-        📊 Editar viaje 
-    </button>
-    <button class="btn btn-successdos" onclick="">
-        📊 Eliminar viaje 
     </button>
 </div>
 <div id="modalViaje" class="modal">
@@ -433,8 +707,28 @@
                 <input type="number" id="inversionViaje" name="inversion" class="form-control" step="0.01" min="0" required>
             </div>
             <div class="action-buttons">
-                <button type="submit" class="btn btn-success">💾 Guardar</button>
+                <button type="submit" class="btn btn-success" >💾 Guardar</button>
                 <button type="button" class="btn btn-danger" onclick="cerrarModalV()">❌ Cancelar</button>
+            </div>
+        </form>
+    </div>
+</div>
+<div id="modalfuente" class="modalF">
+    <div class="modal-content">
+        <h2 id="modalTitulo" style="margin-bottom: 20px; color: #34495e;">Agrega fuentes de este viaje</h2>
+        <form id="formFuente" method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="fuentesfue">Fuentes *</label>
+                <input type="text" id="fuentesfue" name="fuentes" class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="invertidofuente">Inversión *</label>
+                <input type="number" id="invertidofuente" name="invertido" class="form-control" step="0.01" min="0" required>
+            </div>
+            <div class="action-buttons">
+                <button type="submit" class="btn btn-success">💾 Guardar</button>
+                <button type="button" class="btn btn-danger" onclick="cerrarModalFuente()">❌ Cancelar</button>
             </div>
         </form>
     </div>
@@ -559,7 +853,18 @@ function cerrarModalV() {
     document.getElementById('modalViaje').classList.remove('active');
 }
 
-// Event listener para el formulario
+function abrirModalFuente() {
+    console.log("Abriendo modal para agregar fuente...");
+    document.getElementById('modalTitulo').textContent = 'Agregar Fuente de Viaje';
+    document.getElementById('formFuente').reset();
+    document.getElementById('modalfuente').classList.add('active');
+}
+
+function cerrarModalFuente() {
+    document.getElementById('modalfuente').classList.remove('active');
+}
+
+// UN SOLO event listener para formViaje
 const formViaje = document.getElementById('formViaje');
 if (formViaje) {
     formViaje.addEventListener('submit', async function (e) {
@@ -575,7 +880,13 @@ if (formViaje) {
         }
 
         try {
-            // Enviar datos a tu view
+            // Mostrar loading
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '⏳ Guardando...';
+            submitBtn.disabled = true;
+
+            // Enviar datos del VIAJE
             const response = await fetch('{% url "agregar_viaje" %}', {
                 method: 'POST',
                 headers: {
@@ -591,13 +902,71 @@ if (formViaje) {
             const data = await response.json();
 
             if (response.ok) {
-                // Éxito - mostrar mensaje y recargar
-                alert(data.message);
-                cerrarModalV();
-                location.reload(); // Recargar para ver el nuevo viaje
+                // Éxito - cerrar modal de VIAJE y abrir modal de FUENTES
+                cerrarModalV(); // Cierra el modal de viaje
+                
+                // Abre el modal de fuentes después de un delay
+                setTimeout(() => {
+                    abrirModalFuente(); // Abre el modal de fuentes
+                }, 500);
+                
+                // Opcional: mostrar mensaje de éxito
+                alert('✅ Viaje creado. Ahora agrega las fuentes de inversión.');
+                
             } else {
                 // Error
                 alert(data.error || 'Error al guardar el viaje');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Error de conexión');
+        } finally {
+            // Restaurar botón
+            if (submitBtn) {
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            }
+        }
+    });
+}
+
+// Event listener para formFuente
+const formFuente = document.getElementById('formFuente');
+if (formFuente) {
+    formFuente.addEventListener('submit', async function (e) {
+        e.preventDefault();
+
+        const fuente = document.getElementById('fuentesfue').value;
+        const invertido = document.getElementById('invertidofuente').value;
+
+        // Validación básica
+        if (!fuente || !invertido) {
+            alert('Por favor, completa todos los campos');
+            return;
+        }
+
+        try {
+            // Enviar datos de FUENTE
+            const response = await fetch('{% url "agregar_fuente" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({
+                    fuente: fuente,
+                    invertido: parseFloat(invertido)
+                })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                alert(data.message);
+                cerrarModalFuente();
+                location.reload(); // Recargar para ver los cambios
+            } else {
+                alert(data.error || 'Error al guardar la fuente');
             }
         } catch (error) {
             console.error('Error:', error);
@@ -606,10 +975,16 @@ if (formViaje) {
     });
 }
 
-// Cerrar modal al hacer clic fuera
+// Cerrar modales al hacer clic fuera
 document.getElementById('modalViaje').addEventListener('click', function(e) {
     if (e.target === this) {
         cerrarModalV();
+    }
+});
+
+document.getElementById('modalfuente').addEventListener('click', function(e) {
+    if (e.target === this) {
+        cerrarModalFuente();
     }
 });
 </script>
