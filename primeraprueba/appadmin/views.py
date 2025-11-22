@@ -207,4 +207,4 @@ def eliminar_viaje(request, viaje_fecha):
                 'error': f'Error al eliminar: {str(e)}'
             }, status=500)
     
-    return JsonResponse({'error': 'Método no permitido'}, status=405)
+    return redirect('dashboard')
