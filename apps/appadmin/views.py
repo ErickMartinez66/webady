@@ -3,10 +3,10 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
 from django.db.models import Sum, Count, Q
-from newapp.models import perfumes, desodorantes, cremas
-from .models import Viaje,Fuentes
+from apps.newapp.models import perfumes, desodorantes, cremas
+from apps.appadmin.models import Viaje,Fuentes
 from django.contrib.auth import authenticate,login
-from .forms import formviaje
+from apps.appadmin.forms import formviaje
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
@@ -208,3 +208,51 @@ def eliminar_viaje(request, viaje_fecha):
             }, status=500)
     
     return redirect('dashboard')
+#erick analiza y modifica el siguiente codigo 
+def actualizar_viaje(request, viaje_fecha):
+  
+    try:
+       
+        viaje = get_object_or_404(Viaje, fecha=viaje_fecha)
+        
+        if request.method == 'GET':
+            return render(request, 'editar_viaje.html', {
+                'viaje': viaje,
+                'fecha_actual': viaje.fecha,
+                'inversion_actual': viaje.inversion
+            })
+        
+        elif request.method == 'POST':
+            nueva_fecha = request.POST.get('fecha')
+            nueva_inversion = request.POST.get('inversion')
+            
+            
+            if not nueva_fecha or not nueva_inversion:
+                messages.error(request, '❌ Todos los campos son requeridos')
+                return render(request, 'editar_viaje.html', {'viaje': viaje})
+            
+            try:
+                # Verificar si la nueva fecha ya existe (si cambió la fecha)
+                if nueva_fecha != str(viaje.fecha):
+                    if Viaje.objects.filter(fecha=nueva_fecha).exists():
+                        messages.error(request, '❌ Ya existe un viaje con esta fecha')
+                        return render(request, 'editar_viaje.html', {'viaje': viaje})
+                
+                # Actualizar el viaje
+                viaje.fecha = nueva_fecha
+                viaje.inversion = float(nueva_inversion)
+                viaje.save()
+                
+                messages.success(request, '✅ Viaje actualizado exitosamente')
+                return redirect('lista_viajes')  # Cambia por tu vista de lista
+                
+            except ValueError:
+                messages.error(request, '❌ La inversión debe ser un número válido')
+                return render(request, 'editar_viaje.html', {'viaje': viaje})
+            except Exception as e:
+                messages.error(request, f'❌ Error al actualizar: {str(e)}')
+                return render(request, 'editar_viaje.html', {'viaje': viaje})
+    
+    except Viaje.DoesNotExist:
+        messages.error(request, '❌ El viaje no existe')
+        return redirect('lista_viajes')

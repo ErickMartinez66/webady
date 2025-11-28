@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .models import perfumes,cremas,desodorantes
+from apps.newapp.models import perfumes,cremas,desodorantes
 
 
 def vistaprin(request):

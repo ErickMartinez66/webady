@@ -671,12 +671,14 @@
         </table>
         
         <div class="inversion-total">
-            <button class="btn btn-success" onclick="">
-                📊 Editar viaje 
-            </button>
-            
+            <form method="get" action='{% url "actualizar_viaje" viaje.fecha %}' style="display: inline;">
+                {% csrf_token %}
+                <button class="btn btn-success" onclick="return confirm('Actualizaste el viaje del {{ viaje.fecha }}?')">
+                    📊 Editar viaje 
+                </button>
+            </form>
             <!-- Formulario para eliminar viaje -->
-            <form method="post" action="{% url 'eliminar_viaje' viaje.fecha %}" style="display: inline;">
+            <form method="post" action='{% url "eliminar_viaje" viaje.fecha %}' style="display: inline;">
                 {% csrf_token %}
                 <button type="submit" class="btn btn-danger" onclick="return confirm('¿Estás seguro de que quieres eliminar el viaje del {{ viaje.fecha }}?')">
                     🗑️ Eliminar viaje 
@@ -727,7 +729,7 @@
                 <input type="number" id="invertidofuente" name="invertido" class="form-control" step="0.01" min="0" required>
             </div>
             <div class="action-buttons">
-                <button type="submit" class="btn btn-success">💾 Guardar</button>
+                <button type="submit" class="btn btn-success guardar" id="guardar">💾 Guardar</button>
                 <button type="button" class="btn btn-danger" onclick="cerrarModalFuente()">❌ Cancelar</button>
             </div>
         </form>
@@ -935,10 +937,10 @@ const formFuente = document.getElementById('formFuente');
 if (formFuente) {
     formFuente.addEventListener('submit', async function (e) {
         e.preventDefault();
-
+        const guardar= document.getElementById("guardar");
         const fuente = document.getElementById('fuentesfue').value;
         const invertido = document.getElementById('invertidofuente').value;
-
+        
         // Validación básica
         if (!fuente || !invertido) {
             alert('Por favor, completa todos los campos');
@@ -964,7 +966,7 @@ if (formFuente) {
             if (response.ok) {
                 alert(data.message);
                 cerrarModalFuente();
-                location.reload(); // Recargar para ver los cambios
+                //location.reload(); // Recargar para ver los cambios
             } else {
                 alert(data.error || 'Error al guardar la fuente');
             }
@@ -972,6 +974,7 @@ if (formFuente) {
             console.error('Error:', error);
             alert('Error de conexión');
         }
+         abrirModalFuente()
     });
 }
 
@@ -987,5 +990,10 @@ document.getElementById('modalfuente').addEventListener('click', function(e) {
         cerrarModalFuente();
     }
 });
+
+guardar.addEventListener("click",()=>{
+    
+})
+
 </script>
 {% endblock %}
