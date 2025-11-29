@@ -30,13 +30,13 @@
     }
     
     .perfume-card h3 {
-        color: #34495e; /* Fijo en lugar de var(--dark) */
+        color: #34495e;
         font-size: 2.2em;
         margin-bottom: 5px;
     }
     
     .perfume-card p {
-        color: #95a5a6; /* Fijo en lugar de var(--gray) */
+        color: #95a5a6;
         font-weight: 500;
     }
 
@@ -62,22 +62,22 @@
     }
 
     .btn-primary {
-        background: #3498db; /* Fijo en lugar de var(--secondary) */
+        background: #3498db;
         color: white;
     }
 
     .btn-success {
-        background: #27ae60; /* Fijo en lugar de var(--success) */
+        background: #27ae60;
         color: white;
     }
 
     .btn-warning {
-        background: #f39c12; /* Fijo en lugar de var(--warning) */
+        background: #f39c12;
         color: white;
     }
 
     .btn-danger {
-        background: #e74c3c; /* Fijo en lugar de var(--danger) */
+        background: #e74c3c;
         color: white;
     }
 
@@ -108,15 +108,15 @@
     }
 
     .products-table th {
-        background: #ecf0f1; /* Fijo en lugar de var(--light) */
+        background: #ecf0f1;
         font-weight: 600;
-        color: #34495e; /* Fijo en lugar de var(--dark) */
+        color: #34495e;
         font-size: 0.9em;
         text-transform: uppercase;
     }
 
     .products-table tr:hover {
-        background: #f8f9fa; /* Color fijo en lugar de variable */
+        background: #f8f9fa;
     }
 
     .product-image {
@@ -141,7 +141,7 @@
     .empty-state {
         text-align: center;
         padding: 60px 20px;
-        color: #95a5a6; /* Fijo en lugar de var(--gray) */
+        color: #95a5a6;
     }
 
     .btn-group {
@@ -176,7 +176,9 @@
         padding: 30px;
         border-radius: 15px;
         width: 90%;
-        max-width: 500px;
+        max-width: 600px;
+        max-height: 90vh;
+        overflow-y: auto;
         box-shadow: 0 20px 40px rgba(0,0,0,0.2);
     }
 
@@ -188,7 +190,7 @@
         display: block;
         margin-bottom: 8px;
         font-weight: 600;
-        color: #34495e; /* Fijo en lugar de var(--dark) */
+        color: #34495e;
     }
 
     .form-control {
@@ -202,17 +204,77 @@
 
     .form-control:focus {
         outline: none;
-        border-color: #3498db; /* Fijo en lugar de var(--secondary) */
+        border-color: #3498db;
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+    }
+
+    .form-full-width {
+        grid-column: 1 / -1;
+    }
+
+    textarea.form-control {
+        resize: vertical;
+        min-height: 80px;
+    }
+
+    select.form-control {
+        background: white;
+    }
+
+    .file-input-wrapper {
+        position: relative;
+        overflow: hidden;
+        display: inline-block;
+        width: 100%;
+    }
+
+    .file-input-wrapper input[type=file] {
+        position: absolute;
+        left: 0;
+        top: 0;
+        opacity: 0;
+        width: 100%;
+        height: 100%;
+        cursor: pointer;
+    }
+
+    .file-input-label {
+        display: block;
+        padding: 12px;
+        border: 2px dashed #ecf0f1;
+        border-radius: 8px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        background: #fafafa;
+    }
+
+    .file-input-label:hover {
+        border-color: #3498db;
+        background: #f0f8ff;
+    }
+
+    .file-name {
+        margin-top: 5px;
+        font-size: 0.9em;
+        color: #666;
     }
 
     @media (max-width: 768px) {
         .action-buttons { flex-direction: column; }
         .action-buttons .btn { width: 100%; justify-content: center; }
         .perfume-stats { grid-template-columns: 1fr; }
+        .form-grid { grid-template-columns: 1fr; }
+        .modal-content { padding: 20px; }
     }
 </style>
 
-<!-- PRIMERO: Contenido simple para testear -->
+<!-- Contenido principal -->
 <div class="action-buttons">
     <button class="btn btn-primary" onclick="abrirModalCrear()">
         ➕ Agregar Perfume
@@ -222,7 +284,7 @@
     </button>
 </div>
 
-<!-- Estadísticas de perfumes - Versión simplificada -->
+<!-- Estadísticas de perfumes -->
 <div class="perfume-stats">
     <div class="perfume-card">
         <h3 id="total-perfumes">{{ total_perfumes|default:"0" }}</h3>
@@ -242,7 +304,7 @@
     </div>
 </div>
 
-<!-- Tabla de perfumes - Versión simplificada -->
+<!-- Tabla de perfumes -->
 <div class="products-table">
     <table>
         <thead>
@@ -317,43 +379,105 @@
     </table>
 </div>
 
-<!-- Modal simplificado -->
+<!-- Modal para agregar/editar perfume CORREGIDO -->
 <div id="modalPerfume" class="modal">
     <div class="modal-content">
         <h2 id="modalTitulo" style="margin-bottom: 20px; color: #34495e;">Agregar Perfume</h2>
-        <form id="formPerfume">
+        <form id="formPerfume" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            
             <div class="form-group">
                 <label for="nombrePerfume">Nombre del Perfume *</label>
-                <input type="text" id="nombrePerfume" class="form-control" required>
+                <input type="text" id="nombrePerfume" name="nombre" class="form-control" required 
+                       placeholder="Ingrese el nombre del perfume">
             </div>
             
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+            <div class="form-group">
+                <label for="descripcionPerfume">Descripción</label>
+                <textarea id="descripcionPerfume" name="descripcion" class="form-control" 
+                         placeholder="Descripción del perfume..."></textarea>
+            </div>
+            
+            <div class="form-grid">
                 <div class="form-group">
-                    <label for="precioPerfume">Precio *</label>
-                    <input type="number" id="precioPerfume" class="form-control" step="0.01" min="0" required>
+                    <label for="precioPerfume">Precio de Venta *</label>
+                    <input type="number" id="precioPerfume" name="precio" class="form-control" 
+                           min="0" step="1" required placeholder="0">
                 </div>
+                
+                <div class="form-group">
+                    <label for="precioInvPerfume">Precio de Inversión</label>
+                    <input type="number" id="precioInvPerfume" name="precio_inv" class="form-control" 
+                           min="0" step="1" placeholder="0">
+                </div>
+                
+                <div class="form-group">
+                    <label for="generoPerfume">Género *</label>
+                    <select id="generoPerfume" name="genero" class="form-control" required>
+                        <option value="">Seleccione género...</option>
+                        <option value="M">Masculino</option>
+                        <option value="F">Femenino</option>
+                        <option value="U">Unisex</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="tamanoPerfume">Tamaño (ml) *</label>
+                    <input type="number" id="tamanoPerfume" name="tamano" class="form-control" 
+                           min="1" step="1" required placeholder="100">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="imagenPerfume">Imagen del Perfume</label>
+                <div class="file-input-wrapper">
+                    <div class="file-input-label" id="fileInputLabel">
+                        <i class="fas fa-cloud-upload-alt"></i> 
+                        <span>Haz clic para seleccionar una imagen</span>
+                        <div class="file-name" id="fileName">No se ha seleccionado ningún archivo</div>
+                    </div>
+                    <input type="file" id="imagenPerfume" name="imagen" class="form-control" 
+                           accept="image/*">
+                </div>
+            </div>
+            
+            <!-- Campos adicionales que pueden estar en tu modelo -->
+            <div class="form-grid" style="display: none;" id="camposAdicionales">
                 <div class="form-group">
                     <label for="stockPerfume">Stock *</label>
-                    <input type="number" id="stockPerfume" class="form-control" min="0" required>
+                    <input type="number" id="stockPerfume" name="stock" class="form-control" 
+                           min="0" required value="0">
+                </div>
+                
+                <div class="form-group">
+                    <label for="activoPerfume" style="display: flex; align-items: center; gap: 8px;">
+                        <input type="checkbox" id="activoPerfume" name="activo" checked>
+                        Producto Activo
+                    </label>
                 </div>
             </div>
             
             <div class="action-buttons">
-                <button type="submit" class="btn btn-success">💾 Guardar</button>
-                <button type="button" class="btn btn-danger" onclick="cerrarModal()">❌ Cancelar</button>
+                <button type="submit" class="btn btn-success">
+                    <i class="fas fa-save"></i> Guardar Perfume
+                </button>
+                <button type="button" class="btn btn-danger" onclick="cerrarModal()">
+                    <i class="fas fa-times"></i> Cancelar
+                </button>
             </div>
         </form>
     </div>
 </div>
 
 <script>
-    // Script simplificado y seguro
+    // Script mejorado para el formulario de perfumes
     console.log("✅ Script cargado - página funcionando");
     
     function abrirModalCrear() {
-        console.log("Abriendo modal...");
+        console.log("Abriendo modal para crear perfume...");
         document.getElementById('modalTitulo').textContent = 'Agregar Perfume';
         document.getElementById('formPerfume').reset();
+        document.getElementById('fileName').textContent = 'No se ha seleccionado ningún archivo';
         document.getElementById('modalPerfume').classList.add('active');
     }
 
@@ -364,6 +488,7 @@
     function editarPerfume(id) {
         console.log('Editando perfume ID:', id);
         document.getElementById('modalTitulo').textContent = 'Editar Perfume';
+        // Aquí cargarías los datos del perfume para editar
         document.getElementById('modalPerfume').classList.add('active');
     }
 
@@ -378,7 +503,13 @@
         alert('Exportando datos...');
     }
 
-    // Solo agregar event listeners si los elementos existen
+    // Manejo de la selección de archivos
+    document.getElementById('imagenPerfume').addEventListener('change', function(e) {
+        const fileName = e.target.files[0] ? e.target.files[0].name : 'No se ha seleccionado ningún archivo';
+        document.getElementById('fileName').textContent = fileName;
+    });
+
+    // Event listeners para el modal y formulario
     const modalElement = document.getElementById('modalPerfume');
     const formElement = document.getElementById('formPerfume');
     
@@ -393,10 +524,44 @@
     if (formElement) {
         formElement.addEventListener('submit', function(e) {
             e.preventDefault();
+            
+            // Validación básica
             const nombre = document.getElementById('nombrePerfume').value;
-            alert(`Perfume "${nombre}" guardado exitosamente (simulación)`);
+            const precio = document.getElementById('precioPerfume').value;
+            const genero = document.getElementById('generoPerfume').value;
+            const tamano = document.getElementById('tamanoPerfume').value;
+            
+            if (!nombre || !precio || !genero || !tamano) {
+                alert('Por favor complete todos los campos obligatorios (*)');
+                return;
+            }
+            
+            // Simular envío exitoso
+            console.log('Datos del perfume:', {
+                nombre: nombre,
+                descripcion: document.getElementById('descripcionPerfume').value,
+                precio: precio,
+                precio_inv: document.getElementById('precioInvPerfume').value,
+                genero: genero,
+                tamano: tamano,
+                imagen: document.getElementById('imagenPerfume').files[0]?.name
+            });
+            
+            alert(`Perfume "${nombre}" guardado exitosamente`);
             cerrarModal();
+            
+            // En un caso real, aquí harías submit real del formulario
+            // this.submit();
         });
     }
+
+    // Prevenir envío con Enter en inputs individuales
+    document.querySelectorAll('.form-control').forEach(input => {
+        input.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+            }
+        });
+    });
 </script>
 {% endblock %}

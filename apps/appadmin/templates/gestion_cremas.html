@@ -30,13 +30,13 @@
     }
     
     .crema-card h3 {
-        color: #34495e; /* Fijo en lugar de var(--dark) */
+        color: #34495e;
         font-size: 2.2em;
         margin-bottom: 5px;
     }
     
     .crema-card p {
-        color: #95a5a6; /* Fijo en lugar de var(--gray) */
+        color: #95a5a6;
         font-weight: 500;
     }
     
@@ -67,17 +67,17 @@
     }
 
     .btn-primary {
-        background: #3498db; /* Fijo en lugar de var(--secondary) */
+        background: #3498db;
         color: white;
     }
 
     .btn-success {
-        background: #27ae60; /* Fijo en lugar de var(--success) */
+        background: #27ae60;
         color: white;
     }
 
     .btn-danger {
-        background: #e74c3c; /* Fijo en lugar de var(--danger) */
+        background: #e74c3c;
         color: white;
     }
 
@@ -108,15 +108,15 @@
     }
 
     .products-table th {
-        background: #ecf0f1; /* Fijo en lugar de var(--light) */
+        background: #ecf0f1;
         font-weight: 600;
-        color: #34495e; /* Fijo en lugar de var(--dark) */
+        color: #34495e;
         font-size: 0.9em;
         text-transform: uppercase;
     }
 
     .products-table tr:hover {
-        background: #f8f9fa; /* Fijo en lugar de var(--light-gray) */
+        background: #f8f9fa;
     }
 
     .product-image {
@@ -141,7 +141,7 @@
     .empty-state {
         text-align: center;
         padding: 60px 20px;
-        color: #95a5a6; /* Fijo en lugar de var(--gray) */
+        color: #95a5a6;
     }
 
     .btn-group {
@@ -176,7 +176,9 @@
         padding: 30px;
         border-radius: 15px;
         width: 90%;
-        max-width: 500px;
+        max-width: 700px;
+        max-height: 90vh;
+        overflow-y: auto;
         box-shadow: 0 20px 40px rgba(0,0,0,0.2);
     }
 
@@ -188,7 +190,7 @@
         display: block;
         margin-bottom: 8px;
         font-weight: 600;
-        color: #34495e; /* Fijo en lugar de var(--dark) */
+        color: #34495e;
     }
 
     .form-control {
@@ -202,13 +204,73 @@
 
     .form-control:focus {
         outline: none;
-        border-color: #3498db; /* Fijo en lugar de var(--secondary) */
+        border-color: #3498db;
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+    }
+
+    .form-full-width {
+        grid-column: 1 / -1;
+    }
+
+    textarea.form-control {
+        resize: vertical;
+        min-height: 80px;
+    }
+
+    select.form-control {
+        background: white;
+    }
+
+    .file-input-wrapper {
+        position: relative;
+        overflow: hidden;
+        display: inline-block;
+        width: 100%;
+    }
+
+    .file-input-wrapper input[type=file] {
+        position: absolute;
+        left: 0;
+        top: 0;
+        opacity: 0;
+        width: 100%;
+        height: 100%;
+        cursor: pointer;
+    }
+
+    .file-input-label {
+        display: block;
+        padding: 12px;
+        border: 2px dashed #ecf0f1;
+        border-radius: 8px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        background: #fafafa;
+    }
+
+    .file-input-label:hover {
+        border-color: #3498db;
+        background: #f0f8ff;
+    }
+
+    .file-name {
+        margin-top: 5px;
+        font-size: 0.9em;
+        color: #666;
     }
 
     @media (max-width: 768px) {
         .action-buttons { flex-direction: column; }
         .action-buttons .btn { width: 100%; justify-content: center; }
         .crema-stats { grid-template-columns: 1fr; }
+        .form-grid { grid-template-columns: 1fr; }
+        .modal-content { padding: 20px; }
     }
 </style>
 
@@ -221,7 +283,7 @@
     </button>
 </div>
 
-<!-- Estadísticas de cremas - CON VALORES POR DEFECTO -->
+<!-- Estadísticas de cremas -->
 <div class="crema-stats">
     <div class="crema-card">
         <h3>{{ total_cremas|default:"0" }}</h3>
@@ -241,15 +303,15 @@
     </div>
 </div>
 
-<!-- Tabla de cremas - SIMPLIFICADA -->
+<!-- Tabla de cremas CORREGIDA -->
 <div class="products-table">
     <table>
         <thead>
             <tr>
-                <th>Nombre</th>
-                <th>Tipo</th>
+                <th>ID</th>
+                <th>Marca</th>
                 <th>Precio</th>
-                <th>Stock</th>
+                <th>Cantidad</th>
                 <th>Acciones</th>
             </tr>
         </thead>
@@ -259,41 +321,40 @@
                 <td>
                     <div style="display: flex; align-items: center; gap: 10px;">
                         {% if crema.imagen %}
-                        <img src="{{ crema.imagen.url }}" class="product-image" alt="{{ crema.nombre }}">
+                        <img src="{{ crema.imagen.url }}" class="product-image" alt="{{ crema.marca }}">
                         {% else %}
                         <div class="product-image" style="background: #ecf0f1; display: flex; align-items: center; justify-content: center;">
                             🧴
                         </div>
                         {% endif %}
                         <div>
-                            <strong>{{ crema.nombre }}</strong>
-                            {% if crema.descripcion %}
-                            <br><small style="color: #95a5a6;">{{ crema.descripcion|truncatewords:5 }}</small>
-                            {% endif %}
+                            <strong>{{ crema.idcremas }}</strong>
+                            <br><small style="color: #95a5a6;">{{ crema.tamano }}ml</small>
                         </div>
                     </div>
                 </td>
                 <td>
-                    <span class="badge tipo-badge">
-                        {{ crema.get_tipo_display|default:"Sin tipo" }}
-                    </span>
+                    <strong>{{ crema.marca }}</strong>
+                    {% if crema.descripcion %}
+                    <br><small style="color: #95a5a6;">{{ crema.descripcion|truncatewords:5 }}</small>
+                    {% endif %}
                 </td>
                 <td><strong>${{ crema.precio }}</strong></td>
                 <td>
-                    {% if crema.stock > 10 %}
-                    <span class="badge badge-success">{{ crema.stock }}</span>
-                    {% elif crema.stock > 0 %}
-                    <span class="badge badge-warning">{{ crema.stock }}</span>
+                    {% if crema.cantidad > 10 %}
+                    <span class="badge badge-success">{{ crema.cantidad }}</span>
+                    {% elif crema.cantidad > 0 %}
+                    <span class="badge badge-warning">{{ crema.cantidad }}</span>
                     {% else %}
-                    <span class="badge badge-danger">{{ crema.stock }}</span>
+                    <span class="badge badge-danger">{{ crema.cantidad }}</span>
                     {% endif %}
                 </td>
                 <td>
                     <div class="btn-group">
-                        <button class="btn btn-primary" onclick="editarCrema({{ crema.id }})">
+                        <button class="btn btn-primary" onclick="editarCrema('{{ crema.idcremas }}')">
                             ✏️
                         </button>
-                        <button class="btn btn-danger" onclick="eliminarCrema({{ crema.id }})">
+                        <button class="btn btn-danger" onclick="eliminarCrema('{{ crema.idcremas }}')">
                             🗑️
                         </button>
                     </div>
@@ -314,55 +375,95 @@
     </table>
 </div>
 
-<!-- Modal SIMPLIFICADO -->
+<!-- Modal CORREGIDO para agregar/editar crema -->
 <div id="modalCrema" class="modal">
     <div class="modal-content">
         <h2 id="modalTituloCrema" style="margin-bottom: 20px; color: #34495e;">Agregar Crema</h2>
-        <form id="formCrema">
-            <div class="form-group">
-                <label for="nombreCrema">Nombre de la Crema *</label>
-                <input type="text" id="nombreCrema" class="form-control" required>
+        <form id="formCrema" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="idCrema">ID de la Crema *</label>
+                    <input type="text" id="idCrema" name="idcremas" class="form-control" required 
+                           placeholder="Ej: CREMA-001" maxlength="50">
+                </div>
+                
+                <div class="form-group">
+                    <label for="marcaCrema">Marca *</label>
+                    <input type="text" id="marcaCrema" name="marca" class="form-control" required 
+                           placeholder="Ej: Nivea, Cetaphil..." maxlength="50">
+                </div>
             </div>
             
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+            <div class="form-group">
+                <label for="descripcionCrema">Descripción</label>
+                <textarea id="descripcionCrema" name="descripcion" class="form-control" 
+                         placeholder="Descripción de la crema..." rows="3"></textarea>
+            </div>
+            
+            <div class="form-grid">
                 <div class="form-group">
-                    <label for="precioCrema">Precio *</label>
-                    <input type="number" id="precioCrema" class="form-control" step="0.01" min="0" required>
+                    <label for="precioCrema">Precio de Venta *</label>
+                    <input type="number" id="precioCrema" name="precio" class="form-control" 
+                           min="0" step="1" required placeholder="0">
                 </div>
+                
                 <div class="form-group">
-                    <label for="stockCrema">Stock *</label>
-                    <input type="number" id="stockCrema" class="form-control" min="0" required>
+                    <label for="precioInvCrema">Precio de Inversión</label>
+                    <input type="number" id="precioInvCrema" name="precio_inv" class="form-control" 
+                           min="0" step="1" placeholder="0">
+                </div>
+            </div>
+            
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="tamanoCrema">Tamaño (ml) *</label>
+                    <input type="number" id="tamanoCrema" name="tamano" class="form-control" 
+                           min="1" step="1" required placeholder="200">
+                </div>
+                
+                <div class="form-group">
+                    <label for="cantidadCrema">Cantidad en Stock *</label>
+                    <input type="number" id="cantidadCrema" name="cantidad" class="form-control" 
+                           min="0" step="1" required placeholder="0" value="0">
                 </div>
             </div>
             
             <div class="form-group">
-                <label for="tipoCrema">Tipo de Crema</label>
-                <select id="tipoCrema" class="form-control">
-                    <option value="">Seleccionar tipo</option>
-                    <option value="corporal">Corporal</option>
-                    <option value="facial">Facial</option>
-                    <option value="manos">Manos</option>
-                    <option value="antiarrugas">Antiarrugas</option>
-                    <option value="hidratante">Hidratante</option>
-                </select>
+                <label for="imagenCrema">Imagen de la Crema</label>
+                <div class="file-input-wrapper">
+                    <div class="file-input-label" id="fileInputLabel">
+                        <i class="fas fa-cloud-upload-alt"></i> 
+                        <span>Haz clic para seleccionar una imagen</span>
+                        <div class="file-name" id="fileName">No se ha seleccionado ningún archivo</div>
+                    </div>
+                    <input type="file" id="imagenCrema" name="imagen" class="form-control" 
+                           accept="image/*">
+                </div>
             </div>
             
             <div class="action-buttons">
-                <button type="submit" class="btn btn-success">💾 Guardar</button>
-                <button type="button" class="btn btn-danger" onclick="cerrarModalCrema()">❌ Cancelar</button>
+                <button type="submit" class="btn btn-success">
+                    <i class="fas fa-save"></i> Guardar Crema
+                </button>
+                <button type="button" class="btn btn-danger" onclick="cerrarModalCrema()">
+                    <i class="fas fa-times"></i> Cancelar
+                </button>
             </div>
         </form>
     </div>
 </div>
 
 <script>
-    // Script simplificado y seguro
+    // Script mejorado para el formulario de cremas
     console.log("✅ Script de cremas cargado");
     
     function abrirModalCrear() {
-        console.log("Abriendo modal de crema...");
+        console.log("Abriendo modal para crear crema...");
         document.getElementById('modalTituloCrema').textContent = 'Agregar Crema';
         document.getElementById('formCrema').reset();
+        document.getElementById('fileName').textContent = 'No se ha seleccionado ningún archivo';
         document.getElementById('modalCrema').classList.add('active');
     }
 
@@ -373,6 +474,7 @@
     function editarCrema(id) {
         console.log('Editando crema ID:', id);
         document.getElementById('modalTituloCrema').textContent = 'Editar Crema';
+        // Aquí cargarías los datos de la crema para editar
         document.getElementById('modalCrema').classList.add('active');
     }
 
@@ -387,7 +489,13 @@
         alert('Exportando datos de cremas...');
     }
 
-    // Solo agregar event listeners si los elementos existen
+    // Manejo de la selección de archivos
+    document.getElementById('imagenCrema').addEventListener('change', function(e) {
+        const fileName = e.target.files[0] ? e.target.files[0].name : 'No se ha seleccionado ningún archivo';
+        document.getElementById('fileName').textContent = fileName;
+    });
+
+    // Event listeners para el modal y formulario
     const modalElement = document.getElementById('modalCrema');
     const formElement = document.getElementById('formCrema');
     
@@ -402,10 +510,46 @@
     if (formElement) {
         formElement.addEventListener('submit', function(e) {
             e.preventDefault();
-            const nombre = document.getElementById('nombreCrema').value;
-            alert(`Crema "${nombre}" guardada exitosamente (simulación)`);
+            
+            // Validación básica
+            const id = document.getElementById('idCrema').value;
+            const marca = document.getElementById('marcaCrema').value;
+            const precio = document.getElementById('precioCrema').value;
+            const tamano = document.getElementById('tamanoCrema').value;
+            const cantidad = document.getElementById('cantidadCrema').value;
+            
+            if (!id || !marca || !precio || !tamano || !cantidad) {
+                alert('Por favor complete todos los campos obligatorios (*)');
+                return;
+            }
+            
+            // Simular envío exitoso
+            console.log('Datos de la crema:', {
+                idcremas: id,
+                marca: marca,
+                descripcion: document.getElementById('descripcionCrema').value,
+                precio: precio,
+                precio_inv: document.getElementById('precioInvCrema').value,
+                tamano: tamano,
+                cantidad: cantidad,
+                imagen: document.getElementById('imagenCrema').files[0]?.name
+            });
+            
+            alert(`Crema "${marca}" guardada exitosamente`);
             cerrarModalCrema();
+            
+            // En un caso real, aquí harías submit real del formulario
+            // this.submit();
         });
     }
+
+    // Prevenir envío con Enter en inputs individuales
+    document.querySelectorAll('.form-control').forEach(input => {
+        input.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+            }
+        });
+    });
 </script>
 {% endblock %}

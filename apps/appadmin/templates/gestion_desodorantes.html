@@ -30,13 +30,13 @@
     }
     
     .desodorante-card h3 {
-        color: #34495e; /* Fijo en lugar de var(--dark) */
+        color: #34495e;
         font-size: 2.2em;
         margin-bottom: 5px;
     }
     
     .desodorante-card p {
-        color: #95a5a6; /* Fijo en lugar de var(--gray) */
+        color: #95a5a6;
         font-weight: 500;
     }
 
@@ -62,17 +62,17 @@
     }
 
     .btn-primary {
-        background: #3498db; /* Fijo en lugar de var(--secondary) */
+        background: #3498db;
         color: white;
     }
 
     .btn-success {
-        background: #27ae60; /* Fijo en lugar de var(--success) */
+        background: #27ae60;
         color: white;
     }
 
     .btn-danger {
-        background: #e74c3c; /* Fijo en lugar de var(--danger) */
+        background: #e74c3c;
         color: white;
     }
 
@@ -103,15 +103,15 @@
     }
 
     .products-table th {
-        background: #ecf0f1; /* Fijo en lugar de var(--light) */
+        background: #ecf0f1;
         font-weight: 600;
-        color: #34495e; /* Fijo en lugar de var(--dark) */
+        color: #34495e;
         font-size: 0.9em;
         text-transform: uppercase;
     }
 
     .products-table tr:hover {
-        background: #f8f9fa; /* Color fijo en lugar de var(--light-gray) */
+        background: #f8f9fa;
     }
 
     .product-image {
@@ -136,7 +136,7 @@
     .empty-state {
         text-align: center;
         padding: 60px 20px;
-        color: #95a5a6; /* Fijo en lugar de var(--gray) */
+        color: #95a5a6;
     }
 
     .btn-group {
@@ -171,7 +171,9 @@
         padding: 30px;
         border-radius: 15px;
         width: 90%;
-        max-width: 500px;
+        max-width: 700px;
+        max-height: 90vh;
+        overflow-y: auto;
         box-shadow: 0 20px 40px rgba(0,0,0,0.2);
     }
 
@@ -183,7 +185,7 @@
         display: block;
         margin-bottom: 8px;
         font-weight: 600;
-        color: #34495e; /* Fijo en lugar de var(--dark) */
+        color: #34495e;
     }
 
     .form-control {
@@ -197,13 +199,73 @@
 
     .form-control:focus {
         outline: none;
-        border-color: #3498db; /* Fijo en lugar de var(--secondary) */
+        border-color: #3498db;
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+    }
+
+    .form-full-width {
+        grid-column: 1 / -1;
+    }
+
+    textarea.form-control {
+        resize: vertical;
+        min-height: 80px;
+    }
+
+    select.form-control {
+        background: white;
+    }
+
+    .file-input-wrapper {
+        position: relative;
+        overflow: hidden;
+        display: inline-block;
+        width: 100%;
+    }
+
+    .file-input-wrapper input[type=file] {
+        position: absolute;
+        left: 0;
+        top: 0;
+        opacity: 0;
+        width: 100%;
+        height: 100%;
+        cursor: pointer;
+    }
+
+    .file-input-label {
+        display: block;
+        padding: 12px;
+        border: 2px dashed #ecf0f1;
+        border-radius: 8px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        background: #fafafa;
+    }
+
+    .file-input-label:hover {
+        border-color: #3498db;
+        background: #f0f8ff;
+    }
+
+    .file-name {
+        margin-top: 5px;
+        font-size: 0.9em;
+        color: #666;
     }
 
     @media (max-width: 768px) {
         .action-buttons { flex-direction: column; }
         .action-buttons .btn { width: 100%; justify-content: center; }
         .desodorante-stats { grid-template-columns: 1fr; }
+        .form-grid { grid-template-columns: 1fr; }
+        .modal-content { padding: 20px; }
     }
 </style>
 
@@ -216,7 +278,7 @@
     </button>
 </div>
 
-<!-- Estadísticas de desodorantes - CON VALORES POR DEFECTO -->
+<!-- Estadísticas de desodorantes -->
 <div class="desodorante-stats">
     <div class="desodorante-card">
         <h3>{{ total_desodorantes|default:"0" }}</h3>
@@ -236,15 +298,15 @@
     </div>
 </div>
 
-<!-- Tabla de desodorantes - SIMPLIFICADA -->
+<!-- Tabla de desodorantes -->
 <div class="products-table">
     <table>
         <thead>
             <tr>
-                <th>Nombre</th>
-                <th>Tipo</th>
+                <th>ID</th>
+                <th>Marca</th>
                 <th>Precio</th>
-                <th>Stock</th>
+                <th>Cantidad</th>
                 <th>Acciones</th>
             </tr>
         </thead>
@@ -254,41 +316,40 @@
                 <td>
                     <div style="display: flex; align-items: center; gap: 10px;">
                         {% if desodorante.imagen %}
-                        <img src="{{ desodorante.imagen.url }}" class="product-image" alt="{{ desodorante.nombre }}">
+                        <img src="{{ desodorante.imagen.url }}" class="product-image" alt="{{ desodorante.marca }}">
                         {% else %}
                         <div class="product-image" style="background: #ecf0f1; display: flex; align-items: center; justify-content: center;">
                             💨
                         </div>
                         {% endif %}
                         <div>
-                            <strong>{{ desodorante.nombre }}</strong>
-                            {% if desodorante.descripcion %}
-                            <br><small style="color: #95a5a6;">{{ desodorante.descripcion|truncatewords:5 }}</small>
-                            {% endif %}
+                            <strong>{{ desodorante.id }}</strong>
+                            <br><small style="color: #95a5a6;">{{ desodorante.genero }}</small>
                         </div>
                     </div>
                 </td>
                 <td>
-                    <span class="badge" style="background: #a29bfe; color: #2d3436;">
-                        {{ desodorante.get_tipo_display|default:"Sin tipo" }}
-                    </span>
+                    <strong>{{ desodorante.marca }}</strong>
+                    {% if desodorante.descripcion %}
+                    <br><small style="color: #95a5a6;">{{ desodorante.descripcion|truncatewords:5 }}</small>
+                    {% endif %}
                 </td>
                 <td><strong>${{ desodorante.precio }}</strong></td>
                 <td>
-                    {% if desodorante.stock > 10 %}
-                    <span class="badge badge-success">{{ desodorante.stock }}</span>
-                    {% elif desodorante.stock > 0 %}
-                    <span class="badge badge-warning">{{ desodorante.stock }}</span>
+                    {% if desodorante.cantidad > 10 %}
+                    <span class="badge badge-success">{{ desodorante.cantidad }}</span>
+                    {% elif desodorante.cantidad > 0 %}
+                    <span class="badge badge-warning">{{ desodorante.cantidad }}</span>
                     {% else %}
-                    <span class="badge badge-danger">{{ desodorante.stock }}</span>
+                    <span class="badge badge-danger">{{ desodorante.cantidad }}</span>
                     {% endif %}
                 </td>
                 <td>
                     <div class="btn-group">
-                        <button class="btn btn-primary" onclick="editarDesodorante({{ desodorante.id }})">
+                        <button class="btn btn-primary" onclick="editarDesodorante('{{ desodorante.id }}')">
                             ✏️
                         </button>
-                        <button class="btn btn-danger" onclick="eliminarDesodorante({{ desodorante.id }})">
+                        <button class="btn btn-danger" onclick="eliminarDesodorante('{{ desodorante.id }}')">
                             🗑️
                         </button>
                     </div>
@@ -309,54 +370,113 @@
     </table>
 </div>
 
-<!-- Modal SIMPLIFICADO -->
+<!-- Modal CORREGIDO para agregar/editar desodorante -->
 <div id="modalDesodorante" class="modal">
     <div class="modal-content">
         <h2 id="modalTituloDesodorante" style="margin-bottom: 20px; color: #34495e;">Agregar Desodorante</h2>
-        <form id="formDesodorante">
-            <div class="form-group">
-                <label for="nombreDesodorante">Nombre del Desodorante *</label>
-                <input type="text" id="nombreDesodorante" class="form-control" required>
+        <form id="formDesodorante" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="idDesodorante">ID *</label>
+                    <input type="text" id="idDesodorante" name="id" class="form-control" required 
+                           placeholder="Ej: DEO-001" maxlength="50">
+                </div>
+                
+                <div class="form-group">
+                    <label for="marcaDesodorante">Marca *</label>
+                    <input type="text" id="marcaDesodorante" name="marca" class="form-control" required 
+                           placeholder="Ej: Nivea, Rexona..." maxlength="50">
+                </div>
             </div>
             
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+            <div class="form-group">
+                <label for="descripcionDesodorante">Descripción</label>
+                <textarea id="descripcionDesodorante" name="descripcion" class="form-control" 
+                         placeholder="Descripción del desodorante..." rows="3"></textarea>
+            </div>
+            
+            <div class="form-grid">
                 <div class="form-group">
-                    <label for="precioDesodorante">Precio *</label>
-                    <input type="number" id="precioDesodorante" class="form-control" step="0.01" min="0" required>
+                    <label for="precioDesodorante">Precio de Venta *</label>
+                    <input type="number" id="precioDesodorante" name="precio" class="form-control" 
+                           min="0" step="1" required placeholder="0">
                 </div>
+                
                 <div class="form-group">
-                    <label for="stockDesodorante">Stock *</label>
-                    <input type="number" id="stockDesodorante" class="form-control" min="0" required>
+                    <label for="precioInvDesodorante">Precio de Inversión</label>
+                    <input type="number" id="precioInvDesodorante" name="precio_inv" class="form-control" 
+                           min="0" step="1" placeholder="0">
+                </div>
+            </div>
+            
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="generoDesodorante">Género *</label>
+                    <select id="generoDesodorante" name="genero" class="form-control" required>
+                        <option value="">Seleccione género...</option>
+                        <option value="M">Masculino</option>
+                        <option value="F">Femenino</option>
+                        <option value="U">Unisex</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="tamanoDesodorante">Tamaño (ml) *</label>
+                    <input type="number" id="tamanoDesodorante" name="tamano" class="form-control" 
+                           min="1" step="1" required placeholder="150">
+                </div>
+            </div>
+            
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="duracionDesodorante">Duración (horas) *</label>
+                    <input type="number" id="duracionDesodorante" name="duracion" class="form-control" 
+                           min="1" step="1" required placeholder="24">
+                </div>
+                
+                <div class="form-group">
+                    <label for="cantidadDesodorante">Cantidad en Stock *</label>
+                    <input type="number" id="cantidadDesodorante" name="cantidad" class="form-control" 
+                           min="0" step="1" required placeholder="0" value="0">
                 </div>
             </div>
             
             <div class="form-group">
-                <label for="tipoDesodorante">Tipo</label>
-                <select id="tipoDesodorante" class="form-control">
-                    <option value="">Seleccionar tipo</option>
-                    <option value="spray">Spray</option>
-                    <option value="roll-on">Roll-On</option>
-                    <option value="barra">Barra</option>
-                    <option value="crema">Crema</option>
-                </select>
+                <label for="imagenDesodorante">Imagen del Desodorante</label>
+                <div class="file-input-wrapper">
+                    <div class="file-input-label" id="fileInputLabel">
+                        <i class="fas fa-cloud-upload-alt"></i> 
+                        <span>Haz clic para seleccionar una imagen</span>
+                        <div class="file-name" id="fileName">No se ha seleccionado ningún archivo</div>
+                    </div>
+                    <input type="file" id="imagenDesodorante" name="imagen" class="form-control" 
+                           accept="image/*">
+                </div>
             </div>
             
             <div class="action-buttons">
-                <button type="submit" class="btn btn-success">💾 Guardar</button>
-                <button type="button" class="btn btn-danger" onclick="cerrarModalDesodorante()">❌ Cancelar</button>
+                <button type="submit" class="btn btn-success">
+                    <i class="fas fa-save"></i> Guardar Desodorante
+                </button>
+                <button type="button" class="btn btn-danger" onclick="cerrarModalDesodorante()">
+                    <i class="fas fa-times"></i> Cancelar
+                </button>
             </div>
         </form>
     </div>
 </div>
 
 <script>
-    // Script simplificado y seguro
+    // Script mejorado para el formulario de desodorantes
     console.log("✅ Script de desodorantes cargado");
     
     function abrirModalCrear() {
-        console.log("Abriendo modal de desodorante...");
+        console.log("Abriendo modal para crear desodorante...");
         document.getElementById('modalTituloDesodorante').textContent = 'Agregar Desodorante';
         document.getElementById('formDesodorante').reset();
+        document.getElementById('fileName').textContent = 'No se ha seleccionado ningún archivo';
         document.getElementById('modalDesodorante').classList.add('active');
     }
 
@@ -367,6 +487,7 @@
     function editarDesodorante(id) {
         console.log('Editando desodorante ID:', id);
         document.getElementById('modalTituloDesodorante').textContent = 'Editar Desodorante';
+        // Aquí cargarías los datos del desodorante para editar
         document.getElementById('modalDesodorante').classList.add('active');
     }
 
@@ -381,7 +502,13 @@
         alert('Exportando datos de desodorantes...');
     }
 
-    // Solo agregar event listeners si los elementos existen
+    // Manejo de la selección de archivos
+    document.getElementById('imagenDesodorante').addEventListener('change', function(e) {
+        const fileName = e.target.files[0] ? e.target.files[0].name : 'No se ha seleccionado ningún archivo';
+        document.getElementById('fileName').textContent = fileName;
+    });
+
+    // Event listeners para el modal y formulario
     const modalElement = document.getElementById('modalDesodorante');
     const formElement = document.getElementById('formDesodorante');
     
@@ -396,10 +523,50 @@
     if (formElement) {
         formElement.addEventListener('submit', function(e) {
             e.preventDefault();
-            const nombre = document.getElementById('nombreDesodorante').value;
-            alert(`Desodorante "${nombre}" guardado exitosamente (simulación)`);
+            
+            // Validación básica
+            const id = document.getElementById('idDesodorante').value;
+            const marca = document.getElementById('marcaDesodorante').value;
+            const precio = document.getElementById('precioDesodorante').value;
+            const genero = document.getElementById('generoDesodorante').value;
+            const tamano = document.getElementById('tamanoDesodorante').value;
+            const duracion = document.getElementById('duracionDesodorante').value;
+            const cantidad = document.getElementById('cantidadDesodorante').value;
+            
+            if (!id || !marca || !precio || !genero || !tamano || !duracion || !cantidad) {
+                alert('Por favor complete todos los campos obligatorios (*)');
+                return;
+            }
+            
+            // Simular envío exitoso
+            console.log('Datos del desodorante:', {
+                id: id,
+                marca: marca,
+                descripcion: document.getElementById('descripcionDesodorante').value,
+                precio: precio,
+                precio_inv: document.getElementById('precioInvDesodorante').value,
+                genero: genero,
+                tamano: tamano,
+                duracion: duracion,
+                cantidad: cantidad,
+                imagen: document.getElementById('imagenDesodorante').files[0]?.name
+            });
+            
+            alert(`Desodorante "${marca}" guardado exitosamente`);
             cerrarModalDesodorante();
+            
+            // En un caso real, aquí harías submit real del formulario
+            // this.submit();
         });
     }
+
+    // Prevenir envío con Enter en inputs individuales
+    document.querySelectorAll('.form-control').forEach(input => {
+        input.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+            }
+        });
+    });
 </script>
 {% endblock %}

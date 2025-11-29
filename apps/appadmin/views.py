@@ -3,11 +3,12 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
 from django.db.models import Sum, Count, Q
+from django.urls import reverse
 from apps.newapp.models import perfumes, desodorantes, cremas
 from apps.appadmin.models import Viaje,Fuentes
 from django.contrib.auth import authenticate,login
 from apps.appadmin.forms import formviaje
-from django.http import JsonResponse
+from django.http import HttpResponseRedirect, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
 
@@ -120,7 +121,7 @@ def gestion_desodorantes(request):
     
     # Estadísticas para desodorantes
     total_desodorantes_count = desodorantes.objects.count()
-    valor_total_desodorantes = desodorantes.objects.aggregate(total=Sum('precio'))['total'] or 0
+    valor_total_desodorantes = desodorantes.objects.aggregate(total=Sum('precio_inv'))['total'] or 0
     
     context = {
         'desodorantes': lista_desodorantes,
@@ -208,7 +209,7 @@ def eliminar_viaje(request, viaje_fecha):
             }, status=500)
     
     return redirect('dashboard')
-#erick analiza y modifica el siguiente codigo 
+
 def actualizar_viaje(request, viaje_fecha):
   
     try:
@@ -232,19 +233,19 @@ def actualizar_viaje(request, viaje_fecha):
                 return render(request, 'editar_viaje.html', {'viaje': viaje})
             
             try:
-                # Verificar si la nueva fecha ya existe (si cambió la fecha)
+                
                 if nueva_fecha != str(viaje.fecha):
                     if Viaje.objects.filter(fecha=nueva_fecha).exists():
                         messages.error(request, '❌ Ya existe un viaje con esta fecha')
                         return render(request, 'editar_viaje.html', {'viaje': viaje})
                 
-                # Actualizar el viaje
+                
                 viaje.fecha = nueva_fecha
                 viaje.inversion = float(nueva_inversion)
                 viaje.save()
                 
                 messages.success(request, '✅ Viaje actualizado exitosamente')
-                return redirect('lista_viajes')  # Cambia por tu vista de lista
+                return HttpResponseRedirect(reverse('actualizar_fuente', args=[viaje_fecha]))
                 
             except ValueError:
                 messages.error(request, '❌ La inversión debe ser un número válido')
@@ -255,4 +256,62 @@ def actualizar_viaje(request, viaje_fecha):
     
     except Viaje.DoesNotExist:
         messages.error(request, '❌ El viaje no existe')
-        return redirect('lista_viajes')
+        
+    
+def actualizar_fuente(request, viaje_fecha):
+    try:
+        fuentes_filtradas = Fuentes.objects.filter(fechaF=viaje_fecha)
+        
+        # Crear lista de tuplas (fuente, inversion) - SOLUCIÓN CORRECTA
+        fuentes_data = []
+        for fuente in fuentes_filtradas:
+            fuentes_data.append({
+                'fuente': fuente.fuente,
+                'inversion': fuente.invertido
+            })
+        
+        if request.method == 'GET':
+            return render(request, 'editar_fuentes.html', {
+                'fuentes_data': fuentes_data,  # Cambio clave aquí
+                'viaje_fecha': viaje_fecha
+            })
+        
+        elif request.method == 'POST':
+            nueva_fuentes = request.POST.getlist('fuente[]')
+            nueva_inversiones = request.POST.getlist('invertido[]')
+            
+            if not nueva_fuentes or not nueva_inversiones:
+                messages.error(request, '❌ Todos los campos son requeridos')
+                return render(request, 'editar_fuentes.html', {
+                    'fuentes_data': fuentes_data,
+                    'viaje_fecha': viaje_fecha
+                })
+            
+            fuentes_lista = list(fuentes_filtradas)
+            
+            for i in range(len(fuentes_lista)):
+                if i < len(nueva_fuentes):
+                    fuentes_lista[i].fuente = nueva_fuentes[i]
+                
+                if i < len(nueva_inversiones):
+                    try:
+                        nueva_inversion_float = float(nueva_inversiones[i])
+                        fuentes_lista[i].invertido = nueva_inversion_float
+                    except ValueError:
+                        messages.error(request, f'❌ Error: La inversión debe ser un número válido en la fuente {i+1}')
+                        return render(request, 'editar_fuentes.html', {
+                            'fuentes_data': fuentes_data,
+                            'viaje_fecha': viaje_fecha
+                        })
+                
+                fuentes_lista[i].save()
+                
+            messages.success(request, '✅ Fuentes actualizadas correctamente')
+            return redirect('dashboard') 
+            
+    except Exception as e:
+        messages.error(request, f'❌ Error: {str(e)}')
+        return render(request, 'editar_fuentes.html', {
+            'fuentes_data': fuentes_data,
+            'viaje_fecha': viaje_fecha
+        })

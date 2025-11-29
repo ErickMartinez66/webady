@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Fuentes - {{ viaje_fecha }}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Tus estilos CSS aquí (igual que antes) */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 800px;
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4a00e0 0%, #8e2de2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .date-badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 500;
+            margin-top: 10px;
+            backdrop-filter: blur(10px);
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .messages {
+            margin-bottom: 25px;
+        }
+
+        .message {
+            padding: 15px 20px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .message.success {
+            background: #e8f5e9;
+            color: #2e7d32;
+            border-left: 4px solid #4caf50;
+        }
+
+        .message.error {
+            background: #ffebee;
+            color: #c62828;
+            border-left: 4px solid #f44336;
+        }
+
+        .message i {
+            font-size: 1.2rem;
+        }
+
+        .form-container {
+            background: #f8f9fa;
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+
+        .form-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #444;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-title i {
+            color: #6a11cb;
+        }
+
+        .fuentes-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .fuente-item {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid #eaeaea;
+        }
+
+        .fuente-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .fuente-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .fuente-number {
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 12px;
+            font-size: 0.9rem;
+        }
+
+        .fuente-title {
+            font-weight: 600;
+            color: #555;
+        }
+
+        .input-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .form-group {
+            margin-bottom: 0;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: #fafafa;
+        }
+
+        .form-control:focus {
+            border-color: #6a11cb;
+            outline: none;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(106, 17, 203, 0.1);
+        }
+
+        .actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 30px;
+        }
+
+        .btn {
+            padding: 14px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(106, 17, 203, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(106, 17, 203, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #666;
+            text-decoration: none;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+            transform: translateY(-2px);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #888;
+        }
+
+        .empty-state i {
+            font-size: 3.5rem;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+
+        .empty-state h3 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            color: #666;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                border-radius: 15px;
+            }
+            
+            .header {
+                padding: 25px 20px;
+            }
+            
+            .header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .input-row {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .actions {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Editar Fuentes de Financiamiento</h1>
+            <div class="date-badge">
+                <i class="fas fa-calendar-alt"></i> Fecha: {{ viaje_fecha }}
+            </div>
+        </div>
+        
+        <div class="content">
+            <div class="messages">
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="message {% if message.tags == 'error' %}error{% else %}success{% endif %}">
+                            <i class="fas fa-{% if message.tags == 'error' %}exclamation-circle{% else %}check-circle{% endif %}"></i>
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+            
+            <form method="POST">
+                {% csrf_token %}
+                
+                {% if fuentes_data %}
+                    <div class="form-container">
+                        <div class="form-title">
+                            <i class="fas fa-money-bill-wave"></i>
+                            Fuentes de Financiamiento
+                        </div>
+                        
+                        <div class="fuentes-list">
+                            {% for data in fuentes_data %}
+                                <div class="fuente-item">
+                                    <div class="fuente-header">
+                                        <div class="fuente-number">{{ forloop.counter }}</div>
+                                        <div class="fuente-title">Fuente de Financiamiento</div>
+                                    </div>
+                                    
+                                    <div class="input-row">
+                                        <div class="form-group">
+                                            <label for="fuente_{{ forloop.counter }}">Nombre de la Fuente</label>
+                                            <input 
+                                                type="text" 
+                                                id="fuente_{{ forloop.counter }}" 
+                                                name="fuente[]" 
+                                                class="form-control" 
+                                                value="{{ data.fuente }}"
+                                                placeholder="Ingrese el nombre de la fuente"
+                                                required
+                                            >
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                            <label for="invertido_{{ forloop.counter }}">Monto Invertido ($)</label>
+                                            <input 
+                                                type="number" 
+                                                id="invertido_{{ forloop.counter }}" 
+                                                name="invertido[]" 
+                                                class="form-control" 
+                                                value="{{ data.inversion }}"
+                                                step="0.01"
+                                                min="0"
+                                                placeholder="0.00"
+                                                required
+                                            >
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    
+                    <div class="actions">
+                        <a href="{% url 'dashboard' %}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Volver al Dashboard
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Guardar Cambios
+                        </button>
+                    </div>
+                {% else %}
+                    <div class="empty-state">
+                        <i class="fas fa-file-invoice-dollar"></i>
+                        <h3>No hay fuentes registradas</h3>
+                        <p>No se encontraron fuentes de financiamiento para esta fecha.</p>
+                        <a href="{% url 'dashboard' %}" class="btn btn-secondary" style="margin-top: 20px;">
+                            <i class="fas fa-arrow-left"></i> Volver al Dashboard
+                        </a>
+                    </div>
+                {% endif %}
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const inputs = document.querySelectorAll('.form-control');
+            
+            inputs.forEach(input => {
+                input.addEventListener('focus', function() {
+                    this.parentElement.parentElement.parentElement.style.borderLeft = '4px solid #6a11cb';
+                });
+                
+                input.addEventListener('blur', function() {
+                    this.parentElement.parentElement.parentElement.style.borderLeft = 'none';
+                });
+            });
+
+            const numberInputs = document.querySelectorAll('input[type="number"]');
+            numberInputs.forEach(input => {
+                input.addEventListener('input', function() {
+                    if (this.value < 0) {
+                        this.value = 0;
+                    }
+                });
+            });
+            
+            const form = document.querySelector('form');
+            form.addEventListener('submit', function() {
+                const submitBtn = this.querySelector('button[type="submit"]');
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
+                submitBtn.disabled = true;
+            });
+        });
+    </script>
+</body>
+</html>

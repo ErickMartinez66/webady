@@ -671,11 +671,11 @@
         </table>
         
         <div class="inversion-total">
-            <form method="get" action='{% url "actualizar_viaje" viaje.fecha %}' style="display: inline;">
-                {% csrf_token %}
-                <button class="btn btn-success" onclick="return confirm('Actualizaste el viaje del {{ viaje.fecha }}?')">
-                    📊 Editar viaje 
-                </button>
+            <form method="post" action='{% url "actualizar_viaje" viaje.fecha %}' style="display: inline;">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-success">
+                📊 Editar viaje 
+              </button>
             </form>
             <!-- Formulario para eliminar viaje -->
             <form method="post" action='{% url "eliminar_viaje" viaje.fecha %}' style="display: inline;">
