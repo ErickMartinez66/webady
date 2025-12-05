@@ -116,7 +116,7 @@ def gestion_perfumes(request):
 @login_required
 def gestion_desodorantes(request):
     """Vista para gestión de desodorantes"""
-    # ✅ CORREGIDO: Usar nombre diferente
+   
     lista_desodorantes = desodorantes.objects.all().order_by('-id')
     
     # Estadísticas para desodorantes
@@ -191,7 +191,7 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import get_object_or_404
 
-@csrf_exempt  # O maneja el CSRF token apropiadamente
+@csrf_exempt  
 def eliminar_viaje(request, viaje_fecha):
     if request.method == 'POST':  
         try:
@@ -315,3 +315,171 @@ def actualizar_fuente(request, viaje_fecha):
             'fuentes_data': fuentes_data,
             'viaje_fecha': viaje_fecha
         })
+       
+def agregar_perfume(request):
+    if request.method == 'POST':
+        try:
+        
+               
+                nombre = request.POST.get('nombre')
+                descripcion = request.POST.get('descripcion')
+                precio = request.POST.get('precio')
+                precio_inv = request.POST.get('precio_inv')
+                genero = request.POST.get('genero') 
+                tamano = request.POST.get('tamano')
+                imagen = request.FILES.get('imagen') 
+            
+          
+                if not nombre or not precio or not genero or not tamano:
+                  return JsonResponse({
+                    'success': False,
+                    'error': 'Faltan campos obligatorios'
+                }, status=400)
+            
+            
+                perfume = perfumes.objects.create(
+                nombre=nombre,
+                descripcion=descripcion,
+                precio=float(precio),
+                precio_inv=float(precio_inv) if precio_inv else None,
+                genero=genero,
+                tamano=int(tamano),
+                imagen=imagen
+            )
+                
+                return JsonResponse({
+                'success': True,
+                'message': 'Perfume creado exitosamente',
+                
+                'nombre': perfume.nombre
+            })
+            
+        except Exception as e:
+            return JsonResponse({
+                'success': False,
+                'error': str(e)
+            }, status=500)
+    
+    return JsonResponse({'error': 'Método no permitido'}, status=405)
+
+
+def agregar_desodorante(request):
+    if request.method == 'POST':
+        try:
+           
+            id_desodorante = request.POST.get('ID')  # Cambiado de 'id' a 'ID'
+            marca = request.POST.get('marca')
+            descripcion = request.POST.get('descripcion')
+            precio = request.POST.get('precio')
+            precio_inv = request.POST.get('precio_inv')
+            genero = request.POST.get('genero') 
+            tamano = request.POST.get('tamano')
+            duracion = request.POST.get('duracion')
+            cantidad = request.POST.get('cantidad')
+            imagen = request.FILES.get('imagen')
+            
+            
+            if not id_desodorante or not marca or not precio or not genero or not tamano or not duracion:
+                return JsonResponse({
+                    'success': False,
+                    'error': 'Faltan campos obligatorios'
+                }, status=400)
+            
+          
+            desodorante = desodorantes.objects.create(  
+                id=id_desodorante,
+                marca=marca,
+                descripcion=descripcion,
+                precio=float(precio),
+                precio_inv=float(precio_inv) if precio_inv else None,
+                genero=genero,
+                tamano=int(tamano),
+                duracion=int(duracion),
+                cantidad=int(cantidad) if cantidad else 0,
+                imagen=imagen,
+                
+            )
+            
+            return JsonResponse({
+                'success': True,
+                'message': 'Desodorante creado exitosamente',
+                'nombre': desodorante.marca  # Cambiado de id a marca
+            })
+            
+        except Exception as e:
+            # Log del error para debugging
+            print(f"Error al crear desodorante: {str(e)}")
+            return JsonResponse({
+                'success': False,
+                'error': str(e)
+            }, status=500)
+    
+    return JsonResponse({'error': 'Método no permitido'}, status=405)
+
+def agregar_crema(request):
+    if request.method == 'POST':
+        try:
+            # Obtener datos - CORREGIDO: nombres de campos
+            idcrema = request.POST.get('idcrema')  # Debe coincidir con name="idcrema" en HTML
+            marca = request.POST.get('marca')
+            descripcion = request.POST.get('descripcion')
+            precio = request.POST.get('precio')
+            precio_inv = request.POST.get('precio_inv')
+            tamano = request.POST.get('tamano')
+            cantidad = request.POST.get('cantidad')
+            imagen = request.FILES.get('imagen')
+            
+            # Validar campos obligatorios - CORREGIDO: agregar marca y cantidad
+            if not idcrema or not marca or not precio or not tamano:
+                return JsonResponse({
+                    'success': False,
+                    'error': 'Faltan campos obligatorios'
+                }, status=400)
+            
+            # CORREGIDO: El modelo no puede llamarse 'cremas' (es la variable)
+            # Debe llamarse 'Crema' o como tengas definido el modelo
+            crema = cremas.objects.create(  # Cambiado el nombre del modelo
+                idcremas=idcrema,  # Campo ID en el modelo
+                marca=marca,  # ¡IMPORTANTE! Falta en tu código original
+                descripcion=descripcion,
+                precio=float(precio),
+                precio_inv=float(precio_inv) if precio_inv else None,
+                tamano=int(tamano),
+                cantidad=int(cantidad) if cantidad else 0,
+                imagen=imagen,
+                
+            )
+            
+            return JsonResponse({
+                'success': True,
+                'message': 'Crema creada exitosamente',  # CORREGIDO: mensaje
+                'nombre': crema.marca  # Cambiado de idcremas a marca
+            })
+            
+        except Exception as e:
+            # Log del error para debugging
+            print(f"Error al crear crema: {str(e)}")
+            return JsonResponse({
+                'success': False,
+                'error': str(e)
+            }, status=500)
+    
+    return JsonResponse({'error': 'Método no permitido'}, status=405)
+
+def eliminar_perfume(request , nombrep):
+    if request.method== 'POST':
+        perfume=get_object_or_404(perfumes, nombre=nombrep)
+        perfume.delete()
+    return redirect('gestionperfumes')  
+     
+def eliminar_desodorante(request, iddesodo):
+    if request.method == 'POST':
+        desodorante=get_object_or_404(desodorantes, id= iddesodo)
+        desodorante.delete()
+        
+    return redirect('desodoadmin')    
+def eliminar_crema(request,idcremas):
+    if request.method == 'POST':
+        crema=get_object_or_404(cremas,idcremas=idcremas)
+        crema.delete()
+    return redirect('cremasadmin')     

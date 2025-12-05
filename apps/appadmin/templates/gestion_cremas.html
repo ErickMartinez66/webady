@@ -169,6 +169,12 @@
 
     .modal.active {
         display: flex;
+        animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
     }
 
     .modal-content {
@@ -180,6 +186,12 @@
         max-height: 90vh;
         overflow-y: auto;
         box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        animation: slideUp 0.3s ease;
+    }
+
+    @keyframes slideUp {
+        from { transform: translateY(50px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
     }
 
     .form-group {
@@ -265,6 +277,20 @@
         color: #666;
     }
 
+    /* Spinner para carga */
+    .fa-spinner {
+        margin-right: 8px;
+    }
+
+    .fa-spin {
+        animation: fa-spin 1s infinite linear;
+    }
+
+    @keyframes fa-spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
     @media (max-width: 768px) {
         .action-buttons { flex-direction: column; }
         .action-buttons .btn { width: 100%; justify-content: center; }
@@ -274,36 +300,35 @@
     }
 </style>
 
+<!-- Contenido principal -->
 <div class="action-buttons">
-    <button class="btn btn-primary" onclick="abrirModalCrear()">
-        ➕ Agregar Crema
+    <button class="btn btn-primary" id="btnAbrirModalAgregarCrema">
+        <i class="fas fa-plus"></i> Agregar Crema
     </button>
-    <button class="btn btn-success" onclick="exportarDatos()">
-        📊 Exportar Datos
-    </button>
+    
 </div>
 
 <!-- Estadísticas de cremas -->
 <div class="crema-stats">
     <div class="crema-card">
-        <h3>{{ total_cremas|default:"0" }}</h3>
+        <h3 id="total-cremas">{{ total_cremas|default:"0" }}</h3>
         <p>Total Cremas</p>
     </div>
     <div class="crema-card" style="border-left-color: #f39c12;">
-        <h3>{{ stock_bajo_cremas|default:"0" }}</h3>
+        <h3 id="stock-bajo-cremas">{{ stock_bajo_cremas|default:"0" }}</h3>
         <p>Stock Bajo</p>
     </div>
     <div class="crema-card" style="border-left-color: #27ae60;">
-        <h3>${{ valor_total_cremas|default:"0" }}</h3>
+        <h3 id="valor-total-cremas">${{ valor_total_cremas|default:"0" }}</h3>
         <p>Valor Inventario</p>
     </div>
     <div class="crema-card" style="border-left-color: #fd79a8;">
-        <h3>{{ cremas_activas|default:"0" }}</h3>
+        <h3 id="cremas-activas">{{ cremas_activas|default:"0" }}</h3>
         <p>Productos Activos</p>
     </div>
 </div>
 
-<!-- Tabla de cremas CORREGIDA -->
+<!-- Tabla de cremas -->
 <div class="products-table">
     <table>
         <thead>
@@ -354,9 +379,12 @@
                         <button class="btn btn-primary" onclick="editarCrema('{{ crema.idcremas }}')">
                             ✏️
                         </button>
-                        <button class="btn btn-danger" onclick="eliminarCrema('{{ crema.idcremas }}')">
-                            🗑️
-                        </button>
+                        <form method="post" action='{% url "eliminar_crema" crema.idcremas %}' style="display: inline;">
+                             {% csrf_token %}
+                             <button type="submit" class="btn btn-danger" onclick="return confirm('¿Estás seguro de que quieres eliminar el crema?')">
+                              🗑️ 
+                             </button>
+                        </form>
                     </div>
                 </td>
             </tr>
@@ -365,8 +393,8 @@
                 <td colspan="5" class="empty-state">
                     <h3>No hay cremas registradas</h3>
                     <p>Comienza agregando la primera crema.</p>
-                    <button class="btn btn-primary" onclick="abrirModalCrear()">
-                        ➕ Agregar Primera Crema
+                    <button class="btn btn-primary" id="btnAbrirModalDesdeVacioCrema">
+                        <i class="fas fa-plus"></i> Agregar Primera Crema
                     </button>
                 </td>
             </tr>
@@ -375,17 +403,20 @@
     </table>
 </div>
 
-<!-- Modal CORREGIDO para agregar/editar crema -->
+<!-- Modal para agregar/editar crema -->
 <div id="modalCrema" class="modal">
     <div class="modal-content">
         <h2 id="modalTituloCrema" style="margin-bottom: 20px; color: #34495e;">Agregar Crema</h2>
-        <form id="formCrema" method="POST" enctype="multipart/form-data">
+        <!-- IMPORTANTE: Añadir action con la URL correcta -->
+        <form id="formCrema" method="POST" enctype="multipart/form-data" 
+              action="{% url 'agregar_crema' %}">
             {% csrf_token %}
             
             <div class="form-grid">
                 <div class="form-group">
                     <label for="idCrema">ID de la Crema *</label>
-                    <input type="text" id="idCrema" name="idcremas" class="form-control" required 
+                    <!-- IMPORTANTE: name="idcrema" para que coincida con la vista -->
+                    <input type="text" id="idCrema" name="idcrema" class="form-control" required 
                            placeholder="Ej: CREMA-001" maxlength="50">
                 </div>
                 
@@ -405,14 +436,16 @@
             <div class="form-grid">
                 <div class="form-group">
                     <label for="precioCrema">Precio de Venta *</label>
+                    <!-- CAMBIADO: step="0.01" para aceptar decimales -->
                     <input type="number" id="precioCrema" name="precio" class="form-control" 
-                           min="0" step="1" required placeholder="0">
+                           min="0" step="0.01" required placeholder="0">
                 </div>
                 
                 <div class="form-group">
                     <label for="precioInvCrema">Precio de Inversión</label>
+                    <!-- CAMBIADO: step="0.01" para aceptar decimales -->
                     <input type="number" id="precioInvCrema" name="precio_inv" class="form-control" 
-                           min="0" step="1" placeholder="0">
+                           min="0" step="0.01" placeholder="0">
                 </div>
             </div>
             
@@ -433,21 +466,26 @@
             <div class="form-group">
                 <label for="imagenCrema">Imagen de la Crema</label>
                 <div class="file-input-wrapper">
-                    <div class="file-input-label" id="fileInputLabel">
+                    <div class="file-input-label" id="fileInputLabelCrema">
                         <i class="fas fa-cloud-upload-alt"></i> 
                         <span>Haz clic para seleccionar una imagen</span>
-                        <div class="file-name" id="fileName">No se ha seleccionado ningún archivo</div>
+                        <div class="file-name" id="fileNameCrema">No se ha seleccionado ningún archivo</div>
                     </div>
-                    <input type="file" id="imagenCrema" name="imagen" class="form-control" 
-                           accept="image/*">
+                    <input type="file" id="imagenCrema" name="imagen" accept="image/*">
                 </div>
             </div>
             
+            <!-- Campo oculto para estado activo -->
+            <div style="display: none;">
+                <input type="checkbox" id="activoCrema" name="activo" checked>
+            </div>
+            
             <div class="action-buttons">
-                <button type="submit" class="btn btn-success">
+                <!-- CAMBIADO: type="button" y id para manejar con JS -->
+                <button type="button" id="btnGuardarCrema" class="btn btn-success">
                     <i class="fas fa-save"></i> Guardar Crema
                 </button>
-                <button type="button" class="btn btn-danger" onclick="cerrarModalCrema()">
+                <button type="button" class="btn btn-danger" id="btnCancelarCrema">
                     <i class="fas fa-times"></i> Cancelar
                 </button>
             </div>
@@ -456,100 +494,334 @@
 </div>
 
 <script>
-    // Script mejorado para el formulario de cremas
-    console.log("✅ Script de cremas cargado");
+// ============================================
+// GESTIÓN DE CREMAS - SCRIPT COMPLETO
+// ============================================
+
+console.log("✅ Script de gestión de cremas cargado");
+
+// ============================================
+// 1. VARIABLES GLOBALES Y ELEMENTOS
+// ============================================
+
+let modalCremaElement = null;
+let formCremaElement = null;
+let btnGuardarCrema = null;
+let btnAbrirModalAgregarCrema = null;
+let btnAbrirModalDesdeVacioCrema = null;
+
+// ============================================
+// 2. FUNCIONES PRINCIPALES
+// ============================================
+
+function abrirModalCrearCrema() {
+    console.log("🎯 Abriendo modal para crear crema...");
     
-    function abrirModalCrear() {
-        console.log("Abriendo modal para crear crema...");
-        document.getElementById('modalTituloCrema').textContent = 'Agregar Crema';
-        document.getElementById('formCrema').reset();
-        document.getElementById('fileName').textContent = 'No se ha seleccionado ningún archivo';
-        document.getElementById('modalCrema').classList.add('active');
+    // Cambiar título
+    document.getElementById('modalTituloCrema').textContent = 'Agregar Crema';
+    
+    // Limpiar formulario
+    if (formCremaElement) {
+        formCremaElement.reset();
     }
-
-    function cerrarModalCrema() {
-        document.getElementById('modalCrema').classList.remove('active');
+    
+    // Limpiar nombre de archivo
+    const fileNameElement = document.getElementById('fileNameCrema');
+    if (fileNameElement) {
+        fileNameElement.textContent = 'No se ha seleccionado ningún archivo';
     }
-
-    function editarCrema(id) {
-        console.log('Editando crema ID:', id);
-        document.getElementById('modalTituloCrema').textContent = 'Editar Crema';
-        // Aquí cargarías los datos de la crema para editar
-        document.getElementById('modalCrema').classList.add('active');
+    
+    // Mostrar modal
+    if (modalCremaElement) {
+        modalCremaElement.classList.add('active');
+        console.log("✅ Modal de crema abierto correctamente");
+    } else {
+        console.error("❌ No se encontró el elemento modal de crema");
     }
+}
 
-    function eliminarCrema(id) {
-        if (confirm('¿Estás seguro de eliminar esta crema?')) {
-            console.log('Eliminando crema ID:', id);
-            alert('Crema eliminada (simulación)');
+function cerrarModalCrema() {
+    console.log("🔒 Cerrando modal de crema...");
+    if (modalCremaElement) {
+        modalCremaElement.classList.remove('active');
+    }
+}
+
+function editarCrema(id) {
+    console.log('✏️ Editando crema ID:', id);
+    alert('Funcionalidad de edición en desarrollo para ID: ' + id);
+    // Aquí cargarías los datos de la crema para editar
+    // abrirModalCrearCrema();
+}
+
+function eliminarCrema(id) {
+    if (confirm('¿Estás seguro de eliminar esta crema?')) {
+        console.log('🗑️ Eliminando crema ID:', id);
+        alert('Crema ' + id + ' eliminada (simulación)');
+    }
+}
+
+function exportarDatosCremas() {
+    console.log('📊 Exportando datos de cremas...');
+    alert('Funcionalidad de exportación en desarrollo');
+}
+
+// ============================================
+// 3. MANEJO DE ARCHIVOS
+// ============================================
+
+function configurarManejadorArchivosCrema() {
+    const inputArchivo = document.getElementById('imagenCrema');
+    if (inputArchivo) {
+        inputArchivo.addEventListener('change', function(e) {
+            const fileName = e.target.files[0] ? e.target.files[0].name : 'No se ha seleccionado ningún archivo';
+            const fileNameElement = document.getElementById('fileNameCrema');
+            if (fileNameElement) {
+                fileNameElement.textContent = fileName;
+            }
+        });
+        console.log("✅ Manejador de archivos de crema configurado");
+    }
+}
+
+// ============================================
+// 4. ENVÍO DE FORMULARIO
+// ============================================
+
+async function enviarFormularioCrema() {
+    console.log("📤 Enviando formulario de crema...");
+    
+    // Validación básica
+    const id = document.getElementById('idCrema')?.value.trim();
+    const marca = document.getElementById('marcaCrema')?.value.trim();
+    const precio = document.getElementById('precioCrema')?.value;
+    const tamano = document.getElementById('tamanoCrema')?.value;
+    const cantidad = document.getElementById('cantidadCrema')?.value;
+    
+    console.log("📝 Datos de la crema:", {id, marca, precio, tamano, cantidad});
+    
+    // IMPORTANTE: Faltaba validar marca en tu vista original
+    if (!id || !marca || !precio || !tamano || !cantidad) {
+        alert('❌ Por favor complete todos los campos obligatorios (*)');
+        return false;
+    }
+    
+    if (parseFloat(precio) <= 0) {
+        alert('❌ El precio debe ser mayor a 0');
+        return false;
+    }
+    
+    if (parseInt(tamano) <= 0) {
+        alert('❌ El tamaño debe ser mayor a 0');
+        return false;
+    }
+    
+    if (parseInt(cantidad) < 0) {
+        alert('❌ La cantidad no puede ser negativa');
+        return false;
+    }
+    
+    try {
+        // Crear FormData
+        const formData = new FormData(formCremaElement);
+        
+        // Mostrar indicador de carga
+        const btnOriginalHTML = btnGuardarCrema.innerHTML;
+        btnGuardarCrema.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
+        btnGuardarCrema.disabled = true;
+        
+        // Obtener URL del formulario
+        const url = formCremaElement.getAttribute('action');
+        
+        // Obtener token CSRF
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value;
+        
+        if (!csrfToken) {
+            throw new Error('Token CSRF no encontrado');
+        }
+        
+        console.log("🌐 Enviando datos a:", url);
+        
+        // Enviar datos con Fetch API
+        const response = await fetch(url, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': csrfToken
+            }
+        });
+        
+        console.log("📨 Respuesta recibida:", response.status);
+        
+        const data = await response.json();
+        console.log("📊 Datos respuesta:", data);
+        
+        if (data.success) {
+            console.log('✅ Crema guardada exitosamente');
+            
+            // Mostrar mensaje de éxito
+            alert(data.message || `🎉 Crema "${data.nombre}" guardada exitosamente`);
+            
+            // Cerrar modal
+            cerrarModalCrema();
+            
+            // Recargar la página para ver los cambios
+            setTimeout(() => {
+                window.location.reload();
+            }, 1500);
+            
+        } else {
+            // Mostrar error
+            console.error('❌ Error al guardar:', data.error);
+            alert('❌ Error: ' + (data.error || 'Error desconocido'));
+        }
+        
+    } catch (error) {
+        console.error('❌ Error en la solicitud:', error);
+        alert('❌ Error al conectar con el servidor. Por favor, intente nuevamente.');
+    } finally {
+        // Restaurar botón
+        if (btnGuardarCrema) {
+            btnGuardarCrema.innerHTML = '<i class="fas fa-save"></i> Guardar Crema';
+            btnGuardarCrema.disabled = false;
         }
     }
-
-    function exportarDatos() {
-        alert('Exportando datos de cremas...');
-    }
-
-    // Manejo de la selección de archivos
-    document.getElementById('imagenCrema').addEventListener('change', function(e) {
-        const fileName = e.target.files[0] ? e.target.files[0].name : 'No se ha seleccionado ningún archivo';
-        document.getElementById('fileName').textContent = fileName;
-    });
-
-    // Event listeners para el modal y formulario
-    const modalElement = document.getElementById('modalCrema');
-    const formElement = document.getElementById('formCrema');
     
-    if (modalElement) {
-        modalElement.addEventListener('click', function(e) {
+    return false;
+}
+
+// ============================================
+// 5. CONFIGURACIÓN DE EVENTOS
+// ============================================
+
+function configurarEventosCremas() {
+    console.log("🔧 Configurando eventos de cremas...");
+    
+    // 1. Botones para abrir modal
+    if (btnAbrirModalAgregarCrema) {
+        btnAbrirModalAgregarCrema.addEventListener('click', abrirModalCrearCrema);
+        console.log("✅ Botón 'Agregar Crema' configurado");
+    }
+    
+    if (btnAbrirModalDesdeVacioCrema) {
+        btnAbrirModalDesdeVacioCrema.addEventListener('click', abrirModalCrearCrema);
+        console.log("✅ Botón 'Agregar Primera Crema' configurado");
+    }
+    
+    // 2. Botón exportar
+    const btnExportarCremas = document.getElementById('btnExportarCremas');
+    if (btnExportarCremas) {
+        btnExportarCremas.addEventListener('click', exportarDatosCremas);
+    }
+    
+    // 3. Cerrar modal al hacer clic fuera
+    if (modalCremaElement) {
+        modalCremaElement.addEventListener('click', function(e) {
             if (e.target === this) {
                 cerrarModalCrema();
             }
         });
+        console.log("✅ Evento para cerrar modal de crema configurado");
     }
     
-    if (formElement) {
-        formElement.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            // Validación básica
-            const id = document.getElementById('idCrema').value;
-            const marca = document.getElementById('marcaCrema').value;
-            const precio = document.getElementById('precioCrema').value;
-            const tamano = document.getElementById('tamanoCrema').value;
-            const cantidad = document.getElementById('cantidadCrema').value;
-            
-            if (!id || !marca || !precio || !tamano || !cantidad) {
-                alert('Por favor complete todos los campos obligatorios (*)');
-                return;
-            }
-            
-            // Simular envío exitoso
-            console.log('Datos de la crema:', {
-                idcremas: id,
-                marca: marca,
-                descripcion: document.getElementById('descripcionCrema').value,
-                precio: precio,
-                precio_inv: document.getElementById('precioInvCrema').value,
-                tamano: tamano,
-                cantidad: cantidad,
-                imagen: document.getElementById('imagenCrema').files[0]?.name
-            });
-            
-            alert(`Crema "${marca}" guardada exitosamente`);
-            cerrarModalCrema();
-            
-            // En un caso real, aquí harías submit real del formulario
-            // this.submit();
-        });
+    // 4. Enviar formulario
+    if (btnGuardarCrema) {
+        btnGuardarCrema.addEventListener('click', enviarFormularioCrema);
+        console.log("✅ Botón 'Guardar Crema' configurado");
     }
-
-    // Prevenir envío con Enter en inputs individuales
-    document.querySelectorAll('.form-control').forEach(input => {
+    
+    // 5. Botón cancelar
+    const btnCancelarCrema = document.getElementById('btnCancelarCrema');
+    if (btnCancelarCrema) {
+        btnCancelarCrema.addEventListener('click', cerrarModalCrema);
+    }
+    
+    // 6. Prevenir envío con Enter en inputs individuales
+    document.querySelectorAll('#formCrema .form-control').forEach(input => {
         input.addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 e.preventDefault();
+                // Enfocar siguiente campo
+                const form = document.getElementById('formCrema');
+                const index = Array.from(form.elements).indexOf(this);
+                if (index > -1 && index < form.elements.length - 1) {
+                    form.elements[index + 1].focus();
+                }
             }
         });
     });
+    
+    // 7. Manejar submit del formulario
+    if (formCremaElement) {
+        formCremaElement.addEventListener('submit', function(e) {
+            e.preventDefault();
+            enviarFormularioCrema();
+        });
+    }
+}
+
+// ============================================
+// 6. INICIALIZACIÓN
+// ============================================
+
+function inicializarCremas() {
+    console.log("🚀 Inicializando gestión de cremas...");
+    
+    // Obtener referencias a elementos
+    modalCremaElement = document.getElementById('modalCrema');
+    formCremaElement = document.getElementById('formCrema');
+    btnGuardarCrema = document.getElementById('btnGuardarCrema');
+    btnAbrirModalAgregarCrema = document.getElementById('btnAbrirModalAgregarCrema');
+    btnAbrirModalDesdeVacioCrema = document.getElementById('btnAbrirModalDesdeVacioCrema');
+    
+    console.log("🔍 Elementos encontrados:", {
+        modal: !!modalCremaElement,
+        form: !!formCremaElement,
+        btnGuardar: !!btnGuardarCrema,
+        btnAbrir: !!btnAbrirModalAgregarCrema,
+        btnVacio: !!btnAbrirModalDesdeVacioCrema
+    });
+    
+    // Configurar manejadores
+    configurarManejadorArchivosCrema();
+    configurarEventosCremas();
+    
+    console.log("🎉 Sistema de cremas inicializado correctamente");
+}
+
+// ============================================
+// 7. EJECUCIÓN AL CARGAR LA PÁGINA
+// ============================================
+
+// Esperar a que el DOM esté completamente cargado
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', inicializarCremas);
+} else {
+    // DOM ya está cargado
+    inicializarCremas();
+}
+
+// También exportar funciones globalmente para onclick inline
+window.abrirModalCrear = abrirModalCrearCrema;
+window.cerrarModalCrema = cerrarModalCrema;
+window.editarCrema = editarCrema;
+window.eliminarCrema = eliminarCrema;
+window.exportarDatos = exportarDatosCremas;
+
+console.log("🌐 Funciones globales de cremas expuestas");
+
+// ============================================
+// 8. CÓDIGO DE EMERGENCIA (DEBUG)
+// ============================================
+
+setTimeout(function() {
+    // Verificar si los botones responden
+    const testButton = document.createElement('button');
+    testButton.textContent = 'TEST - Abrir Modal Crema';
+    testButton.style.cssText = 'position:fixed;top:50px;right:10px;z-index:9999;padding:10px;background:#55efc4;color:white;';
+    testButton.onclick = abrirModalCrearCrema;
+    document.body.appendChild(testButton);
+    console.log('🟢 Botón de prueba de crema añadido');
+}, 1000);
 </script>
 {% endblock %}

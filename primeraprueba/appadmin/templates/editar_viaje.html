@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Viaje</title>
+    <style>
+        /* Fondo del modal */
+        .modal-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        /* Contenido del modal - pequeño y centrado */
+        .modal-content {
+            background-color: #fefefe;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 400px;
+            animation: modalFadeIn 0.3s;
+        }
+
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Estilos del formulario */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: bold;
+            color: #34495e;
+            font-size: 14px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
+        }
+
+        /* Botones */
+        .action-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 25px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+
+        .btn-success {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #218838;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+
+        /* Título */
+        .modal-title {
+            margin-bottom: 20px;
+            color: #34495e;
+            font-size: 18px;
+            text-align: center;
+            border-bottom: 1px solid #ecf0f1;
+            padding-bottom: 10px;
+        }
+
+        /* Mensajes */
+        .alert {
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+    <div class="modal-backdrop">
+        <div class="modal-content">
+            <h2 class="modal-title">✏️ Editar Viaje</h2>
+            
+          
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{% if message.tags == 'success' %}success{% else %}error{% endif %}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <form method="post">
+                {% csrf_token %}
+                
+                <div class="form-group">
+                    <label for="fecha">Fecha del Viaje *</label>
+                    <input type="date" id="fecha" name="fecha" 
+                           value="{{ viaje.fecha|date:'Y-m-d' }}" 
+                           class="form-control" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="inversion">Inversión Total *</label>
+                    <input type="number" id="inversion" name="inversion" 
+                           value="{{ viaje.inversion }}" 
+                           step="0.01" min="0" class="form-control" required>
+                    <small style="color: #666; font-size: 12px;">Formato: 1500.00</small>
+                </div>
+                
+                <div class="action-buttons">
+                    <button type="submit" class="btn btn-success">💾 Guardar Cambios</button>
+                    <button type="button" class="btn btn-danger" onclick="window.history.back()">❌ Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Cerrar modal al hacer clic fuera del contenido
+        document.querySelector('.modal-backdrop').addEventListener('click', function(e) {
+            if (e.target === this) {
+                window.history.back();
+            }
+        });
+
+        // Cerrar con tecla ESC
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                window.history.back();
+            }
+        });
+
+        // Enfocar el primer campo al cargar
+        document.getElementById('fecha').focus();
+    </script>
+</body>
+</html>

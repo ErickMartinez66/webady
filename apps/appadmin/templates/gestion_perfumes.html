@@ -274,17 +274,15 @@
     }
 </style>
 
-<!-- Contenido principal -->
+
 <div class="action-buttons">
-    <button class="btn btn-primary" onclick="abrirModalCrear()">
-        ➕ Agregar Perfume
+    <button class="btn btn-primary" id="btnAbrirModalAgregar">
+        <i class="fas fa-plus"></i> Agregar Perfume
     </button>
-    <button class="btn btn-success" onclick="exportarDatos()">
-        📊 Exportar Datos
-    </button>
+   
 </div>
 
-<!-- Estadísticas de perfumes -->
+
 <div class="perfume-stats">
     <div class="perfume-card">
         <h3 id="total-perfumes">{{ total_perfumes|default:"0" }}</h3>
@@ -304,7 +302,7 @@
     </div>
 </div>
 
-<!-- Tabla de perfumes -->
+
 <div class="products-table">
     <table>
         <thead>
@@ -355,12 +353,15 @@
                 </td>
                 <td>
                     <div class="btn-group">
-                        <button class="btn btn-primary" onclick="editarPerfume({{ perfume.id }})">
+                        <button class="btn btn-primary" onclick="editarPerfume({{ perfume.nombre }})" >
                             ✏️
                         </button>
-                        <button class="btn btn-danger" onclick="eliminarPerfume({{ perfume.id }})">
-                            🗑️
-                        </button>
+                        <form method="post" action='{% url "eliminar_perfume" perfume.nombre %}' style="display: inline;">
+                             {% csrf_token %}
+                             <button type="submit" class="btn btn-danger" onclick="return confirm('¿Estás seguro de que quieres eliminar el perfume?')">
+                              🗑️ 
+                             </button>
+                        </form>
                     </div>
                 </td>
             </tr>
@@ -369,8 +370,8 @@
                 <td colspan="5" class="empty-state">
                     <h3>No hay perfumes registrados</h3>
                     <p>Comienza agregando el primer perfume.</p>
-                    <button class="btn btn-primary" onclick="abrirModalCrear()">
-                        ➕ Agregar Primer Perfume
+                    <button class="btn btn-primary" id="btnAbrirModalDesdeVacio">
+                        <i class="fas fa-plus"></i> Agregar Primer Perfume
                     </button>
                 </td>
             </tr>
@@ -379,86 +380,69 @@
     </table>
 </div>
 
-<!-- Modal para agregar/editar perfume CORREGIDO -->
+<!-- MODAL PARA AGREGAR/EDITAR PERFUME -->
 <div id="modalPerfume" class="modal">
     <div class="modal-content">
         <h2 id="modalTitulo" style="margin-bottom: 20px; color: #34495e;">Agregar Perfume</h2>
-        <form id="formPerfume" method="POST" enctype="multipart/form-data">
+        <form id="formPerfume" method="POST" enctype="multipart/form-data" 
+              action="{% url 'agregar_perfume' %}">
             {% csrf_token %}
             
             <div class="form-group">
                 <label for="nombrePerfume">Nombre del Perfume *</label>
-                <input type="text" id="nombrePerfume" name="nombre" class="form-control" required 
-                       placeholder="Ingrese el nombre del perfume">
+                <input type="text" id="nombrePerfume" name="nombre" class="form-control" required>
             </div>
             
             <div class="form-group">
                 <label for="descripcionPerfume">Descripción</label>
-                <textarea id="descripcionPerfume" name="descripcion" class="form-control" 
-                         placeholder="Descripción del perfume..."></textarea>
-            </div>
-            
-            <div class="form-grid">
-                <div class="form-group">
-                    <label for="precioPerfume">Precio de Venta *</label>
-                    <input type="number" id="precioPerfume" name="precio" class="form-control" 
-                           min="0" step="1" required placeholder="0">
-                </div>
-                
-                <div class="form-group">
-                    <label for="precioInvPerfume">Precio de Inversión</label>
-                    <input type="number" id="precioInvPerfume" name="precio_inv" class="form-control" 
-                           min="0" step="1" placeholder="0">
-                </div>
-                
-                <div class="form-group">
-                    <label for="generoPerfume">Género *</label>
-                    <select id="generoPerfume" name="genero" class="form-control" required>
-                        <option value="">Seleccione género...</option>
-                        <option value="M">Masculino</option>
-                        <option value="F">Femenino</option>
-                        <option value="U">Unisex</option>
-                    </select>
-                </div>
-                
-                <div class="form-group">
-                    <label for="tamanoPerfume">Tamaño (ml) *</label>
-                    <input type="number" id="tamanoPerfume" name="tamano" class="form-control" 
-                           min="1" step="1" required placeholder="100">
-                </div>
+                <textarea id="descripcionPerfume" name="descripcion" class="form-control"></textarea>
             </div>
             
             <div class="form-group">
-                <label for="imagenPerfume">Imagen del Perfume</label>
+                <label for="precioPerfume">Precio *</label>
+                <input type="number" id="precioPerfume" name="precio" class="form-control" required step="0.01" min="0">
+            </div>
+            
+            <div class="form-group">
+                <label for="precioInvPerfume">Precio Inversión</label>
+                <input type="number" id="precioInvPerfume" name="precio_inv" class="form-control" step="0.01" min="0">
+            </div>
+            
+            <div class="form-group">
+                <label for="generoPerfume">Género *</label>
+                <select id="generoPerfume" name="genero" class="form-control" required>
+                    <option value="">Seleccionar...</option>
+                    <option value="M">Masculino</option>
+                    <option value="F">Femenino</option>
+                    <option value="U">Unisex</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="tamanoPerfume">Tamaño (ml) *</label>
+                <input type="number" id="tamanoPerfume" name="tamano" class="form-control" required min="1">
+            </div>
+            
+            <div class="form-group">
+                <label for="imagenPerfume">Imagen</label>
                 <div class="file-input-wrapper">
                     <div class="file-input-label" id="fileInputLabel">
                         <i class="fas fa-cloud-upload-alt"></i> 
-                        <span>Haz clic para seleccionar una imagen</span>
-                        <div class="file-name" id="fileName">No se ha seleccionado ningún archivo</div>
+                        <span>Seleccionar imagen</span>
+                        <div class="file-name" id="fileName">No hay archivo seleccionado</div>
                     </div>
-                    <input type="file" id="imagenPerfume" name="imagen" class="form-control" 
-                           accept="image/*">
+                    <input type="file" id="imagenPerfume" name="imagen" accept="image/*">
                 </div>
             </div>
             
-            <!-- Campos adicionales que pueden estar en tu modelo -->
-            <div class="form-grid" style="display: none;" id="camposAdicionales">
-                <div class="form-group">
-                    <label for="stockPerfume">Stock *</label>
-                    <input type="number" id="stockPerfume" name="stock" class="form-control" 
-                           min="0" required value="0">
-                </div>
-                
-                <div class="form-group">
-                    <label for="activoPerfume" style="display: flex; align-items: center; gap: 8px;">
-                        <input type="checkbox" id="activoPerfume" name="activo" checked>
-                        Producto Activo
-                    </label>
-                </div>
+            <!-- Campos adicionales ocultos -->
+            <div style="display: none;">
+                <input type="number" id="stockPerfume" name="stock" value="0">
+                <input type="checkbox" id="activoPerfume" name="activo" checked>
             </div>
             
             <div class="action-buttons">
-                <button type="submit" class="btn btn-success">
+                <button type="button" id="btnGuardarPerfume" class="btn btn-success">
                     <i class="fas fa-save"></i> Guardar Perfume
                 </button>
                 <button type="button" class="btn btn-danger" onclick="cerrarModal()">
@@ -470,92 +454,227 @@
 </div>
 
 <script>
-    // Script mejorado para el formulario de perfumes
-    console.log("✅ Script cargado - página funcionando");
+// ============================================
+// GESTIÓN DE PERFUMES - SCRIPT SIMPLIFICADO
+// ============================================
+
+console.log("✅ Script de gestión de perfumes cargado");
+
+// Variables globales
+let modalElement = document.getElementById('modalPerfume');
+let formElement = document.getElementById('formPerfume');
+
+// ============================================
+// FUNCIONES PRINCIPALES
+// ============================================
+
+function abrirModalCrear() {
+    console.log("🎯 Abriendo modal para crear perfume...");
     
-    function abrirModalCrear() {
-        console.log("Abriendo modal para crear perfume...");
-        document.getElementById('modalTitulo').textContent = 'Agregar Perfume';
-        document.getElementById('formPerfume').reset();
-        document.getElementById('fileName').textContent = 'No se ha seleccionado ningún archivo';
-        document.getElementById('modalPerfume').classList.add('active');
+    // Cambiar título
+    document.getElementById('modalTitulo').textContent = 'Agregar Perfume';
+    
+    // Limpiar formulario
+    if (formElement) {
+        formElement.reset();
     }
-
-    function cerrarModal() {
-        document.getElementById('modalPerfume').classList.remove('active');
+    
+    // Limpiar nombre de archivo
+    const fileNameElement = document.getElementById('fileName');
+    if (fileNameElement) {
+        fileNameElement.textContent = 'No hay archivo seleccionado';
     }
-
-    function editarPerfume(id) {
-        console.log('Editando perfume ID:', id);
-        document.getElementById('modalTitulo').textContent = 'Editar Perfume';
-        // Aquí cargarías los datos del perfume para editar
-        document.getElementById('modalPerfume').classList.add('active');
+    
+    // Mostrar modal
+    if (modalElement) {
+        modalElement.classList.add('active');
+        console.log("✅ Modal abierto correctamente");
+    } else {
+        console.error("❌ No se encontró el elemento modal");
     }
+}
 
-    function eliminarPerfume(id) {
-        if (confirm('¿Estás seguro de eliminar este perfume?')) {
-            console.log('Eliminando perfume ID:', id);
-            alert('Perfume eliminado (simulación)');
+function cerrarModal() {
+    console.log("🔒 Cerrando modal...");
+    if (modalElement) {
+        modalElement.classList.remove('active');
+    }
+}
+
+function editarPerfume(id) {
+    console.log('✏️ Editando perfume ID:', id);
+    alert('Funcionalidad de edición en desarrollo para ID: ' + id);
+}
+
+function eliminarPerfume(id) {
+    if (confirm('¿Estás seguro de eliminar este perfume?')) {
+        console.log('🗑️ Eliminando perfume ID:', id);
+        alert('Perfume ' + id + ' eliminado (simulación)');
+    }
+}
+
+function exportarDatos() {
+    console.log('📊 Exportando datos...');
+    alert('Funcionalidad de exportación en desarrollo');
+}
+
+// ============================================
+// MANEJO DE ARCHIVOS
+// ============================================
+
+document.getElementById('imagenPerfume').addEventListener('change', function(e) {
+    const fileName = e.target.files[0] ? e.target.files[0].name : 'No hay archivo seleccionado';
+    document.getElementById('fileName').textContent = fileName;
+});
+
+// ============================================
+// ENVÍO DE FORMULARIO
+// ============================================
+
+async function enviarFormularioPerfume() {
+    console.log("📤 Enviando formulario...");
+    
+    // Validación básica
+    const nombre = document.getElementById('nombrePerfume')?.value.trim();
+    const precio = document.getElementById('precioPerfume')?.value;
+    const genero = document.getElementById('generoPerfume')?.value;
+    const tamano = document.getElementById('tamanoPerfume')?.value;
+    
+    if (!nombre || !precio || !genero || !tamano) {
+        alert('❌ Por favor complete todos los campos obligatorios (*)');
+        return false;
+    }
+    
+    if (parseFloat(precio) <= 0) {
+        alert('❌ El precio debe ser mayor a 0');
+        return false;
+    }
+    
+    if (parseInt(tamano) <= 0) {
+        alert('❌ El tamaño debe ser mayor a 0');
+        return false;
+    }
+    
+    try {
+        // Crear FormData
+        const formData = new FormData(formElement);
+        
+        // Mostrar indicador de carga
+        const btnGuardar = document.getElementById('btnGuardarPerfume');
+        const btnOriginalHTML = btnGuardar.innerHTML;
+        btnGuardar.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
+        btnGuardar.disabled = true;
+        
+        // Obtener URL del formulario
+        const url = formElement.getAttribute('action');
+        
+        // Obtener token CSRF
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value;
+        
+        if (!csrfToken) {
+            throw new Error('Token CSRF no encontrado');
+        }
+        
+        console.log("🌐 Enviando datos a:", url);
+        
+        // Enviar datos con Fetch API
+        const response = await fetch(url, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': csrfToken
+            }
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            console.log('✅ Perfume guardado exitosamente');
+            
+            // Mostrar mensaje de éxito
+            alert(data.message || `🎉 Perfume "${data.nombre}" guardado exitosamente`);
+            
+            // Cerrar modal
+            cerrarModal();
+            
+            // Recargar la página para ver los cambios
+            setTimeout(() => {
+                window.location.reload();
+            }, 1500);
+            
+        } else {
+            // Mostrar error
+            console.error('❌ Error al guardar:', data.error);
+            alert('❌ Error: ' + (data.error || 'Error desconocido'));
+        }
+        
+    } catch (error) {
+        console.error('❌ Error en la solicitud:', error);
+        alert('❌ Error al conectar con el servidor. Por favor, intente nuevamente.');
+    } finally {
+        // Restaurar botón
+        const btnGuardar = document.getElementById('btnGuardarPerfume');
+        if (btnGuardar) {
+            btnGuardar.innerHTML = '<i class="fas fa-save"></i> Guardar Perfume';
+            btnGuardar.disabled = false;
         }
     }
-
-    function exportarDatos() {
-        alert('Exportando datos...');
-    }
-
-    // Manejo de la selección de archivos
-    document.getElementById('imagenPerfume').addEventListener('change', function(e) {
-        const fileName = e.target.files[0] ? e.target.files[0].name : 'No se ha seleccionado ningún archivo';
-        document.getElementById('fileName').textContent = fileName;
-    });
-
-    // Event listeners para el modal y formulario
-    const modalElement = document.getElementById('modalPerfume');
-    const formElement = document.getElementById('formPerfume');
     
+    return false;
+}
+
+// ============================================
+// CONFIGURACIÓN DE EVENTOS
+// ============================================
+
+document.addEventListener('DOMContentLoaded', function() {
+    console.log("🚀 Inicializando gestión de perfumes...");
+    
+    // 1. Botones para abrir modal
+    const btnAbrirModalAgregar = document.getElementById('btnAbrirModalAgregar');
+    if (btnAbrirModalAgregar) {
+        btnAbrirModalAgregar.addEventListener('click', abrirModalCrear);
+        console.log("✅ Botón 'Agregar Perfume' configurado");
+    }
+    
+    const btnAbrirModalDesdeVacio = document.getElementById('btnAbrirModalDesdeVacio');
+    if (btnAbrirModalDesdeVacio) {
+        btnAbrirModalDesdeVacio.addEventListener('click', abrirModalCrear);
+        console.log("✅ Botón 'Agregar Primer Perfume' configurado");
+    }
+    
+    // 2. Botón exportar
+    const btnExportar = document.getElementById('btnExportar');
+    if (btnExportar) {
+        btnExportar.addEventListener('click', exportarDatos);
+    }
+    
+    // 3. Cerrar modal al hacer clic fuera
     if (modalElement) {
         modalElement.addEventListener('click', function(e) {
             if (e.target === this) {
                 cerrarModal();
             }
         });
+        console.log("✅ Evento para cerrar modal configurado");
     }
     
+    // 4. Enviar formulario
+    const btnGuardarPerfume = document.getElementById('btnGuardarPerfume');
+    if (btnGuardarPerfume) {
+        btnGuardarPerfume.addEventListener('click', enviarFormularioPerfume);
+        console.log("✅ Botón 'Guardar Perfume' configurado");
+    }
+    
+    // 5. Manejar submit del formulario
     if (formElement) {
         formElement.addEventListener('submit', function(e) {
             e.preventDefault();
-            
-            // Validación básica
-            const nombre = document.getElementById('nombrePerfume').value;
-            const precio = document.getElementById('precioPerfume').value;
-            const genero = document.getElementById('generoPerfume').value;
-            const tamano = document.getElementById('tamanoPerfume').value;
-            
-            if (!nombre || !precio || !genero || !tamano) {
-                alert('Por favor complete todos los campos obligatorios (*)');
-                return;
-            }
-            
-            // Simular envío exitoso
-            console.log('Datos del perfume:', {
-                nombre: nombre,
-                descripcion: document.getElementById('descripcionPerfume').value,
-                precio: precio,
-                precio_inv: document.getElementById('precioInvPerfume').value,
-                genero: genero,
-                tamano: tamano,
-                imagen: document.getElementById('imagenPerfume').files[0]?.name
-            });
-            
-            alert(`Perfume "${nombre}" guardado exitosamente`);
-            cerrarModal();
-            
-            // En un caso real, aquí harías submit real del formulario
-            // this.submit();
+            enviarFormularioPerfume();
         });
     }
-
-    // Prevenir envío con Enter en inputs individuales
+    
+    // 6. Prevenir envío con Enter
     document.querySelectorAll('.form-control').forEach(input => {
         input.addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
@@ -563,5 +682,26 @@
             }
         });
     });
+    
+    console.log("🎉 Sistema de perfumes inicializado correctamente");
+    
+    // Exportar funciones al objeto window para onclick inline
+    window.abrirModalCrear = abrirModalCrear;
+    window.cerrarModal = cerrarModal;
+    window.editarPerfume = editarPerfume;
+    window.eliminarPerfume = eliminarPerfume;
+    window.exportarDatos = exportarDatos;
+});
+
+// Código de emergencia - si aún no funciona
+setTimeout(function() {
+    // Verificar si los botones responden
+    const testButton = document.createElement('button');
+    testButton.textContent = 'TEST - Abrir Modal';
+    testButton.style.cssText = 'position:fixed;top:10px;right:10px;z-index:9999;padding:10px;background:red;color:white;';
+    testButton.onclick = abrirModalCrear;
+    document.body.appendChild(testButton);
+    console.log('🔴 Botón de prueba añadido');
+}, 1000);
 </script>
 {% endblock %}

@@ -164,6 +164,12 @@
 
     .modal.active {
         display: flex;
+        animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
     }
 
     .modal-content {
@@ -175,6 +181,12 @@
         max-height: 90vh;
         overflow-y: auto;
         box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        animation: slideUp 0.3s ease;
+    }
+
+    @keyframes slideUp {
+        from { transform: translateY(50px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
     }
 
     .form-group {
@@ -260,6 +272,20 @@
         color: #666;
     }
 
+    /* Spinner para carga */
+    .fa-spinner {
+        margin-right: 8px;
+    }
+
+    .fa-spin {
+        animation: fa-spin 1s infinite linear;
+    }
+
+    @keyframes fa-spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
     @media (max-width: 768px) {
         .action-buttons { flex-direction: column; }
         .action-buttons .btn { width: 100%; justify-content: center; }
@@ -269,31 +295,30 @@
     }
 </style>
 
+<!-- Contenido principal -->
 <div class="action-buttons">
-    <button class="btn btn-primary" onclick="abrirModalCrear()">
-        ➕ Agregar Desodorante
+    <button class="btn btn-primary" id="btnAbrirModalAgregarDesodorante">
+        <i class="fas fa-plus"></i> Agregar Desodorante
     </button>
-    <button class="btn btn-success" onclick="exportarDatos()">
-        📊 Exportar Datos
-    </button>
+    
 </div>
 
 <!-- Estadísticas de desodorantes -->
 <div class="desodorante-stats">
     <div class="desodorante-card">
-        <h3>{{ total_desodorantes|default:"0" }}</h3>
+        <h3 id="total-desodorantes">{{ total_desodorantes|default:"0" }}</h3>
         <p>Total Desodorantes</p>
     </div>
     <div class="desodorante-card" style="border-left-color: #f39c12;">
-        <h3>{{ stock_bajo_desodorantes|default:"0" }}</h3>
+        <h3 id="stock-bajo-desodorantes">{{ stock_bajo_desodorantes|default:"0" }}</h3>
         <p>Stock Bajo</p>
     </div>
     <div class="desodorante-card" style="border-left-color: #27ae60;">
-        <h3>${{ valor_total_desodorantes|default:"0" }}</h3>
+        <h3 id="valor-total-desodorantes">${{ valor_total_desodorantes|default:"0" }}</h3>
         <p>Valor Inventario</p>
     </div>
     <div class="desodorante-card" style="border-left-color: #3498db;">
-        <h3>{{ desodorantes_activos|default:"0" }}</h3>
+        <h3 id="desodorantes-activos">{{ desodorantes_activos|default:"0" }}</h3>
         <p>Productos Activos</p>
     </div>
 </div>
@@ -349,9 +374,12 @@
                         <button class="btn btn-primary" onclick="editarDesodorante('{{ desodorante.id }}')">
                             ✏️
                         </button>
-                        <button class="btn btn-danger" onclick="eliminarDesodorante('{{ desodorante.id }}')">
-                            🗑️
-                        </button>
+                        <form method="post" action='{% url "eliminar_desodorante" desodorante.id %}' style="display: inline;">
+                             {% csrf_token %}
+                             <button type="submit" class="btn btn-danger" onclick="return confirm('¿Estás seguro de que quieres eliminar el desodorante?')">
+                              🗑️ 
+                             </button>
+                        </form>
                     </div>
                 </td>
             </tr>
@@ -360,8 +388,8 @@
                 <td colspan="5" class="empty-state">
                     <h3>No hay desodorantes registrados</h3>
                     <p>Comienza agregando el primer desodorante.</p>
-                    <button class="btn btn-primary" onclick="abrirModalCrear()">
-                        ➕ Agregar Primer Desodorante
+                    <button class="btn btn-primary" id="btnAbrirModalDesdeVacioDesodorante">
+                        <i class="fas fa-plus"></i> Agregar Primer Desodorante
                     </button>
                 </td>
             </tr>
@@ -370,17 +398,20 @@
     </table>
 </div>
 
-<!-- Modal CORREGIDO para agregar/editar desodorante -->
+<!-- Modal para agregar/editar desodorante -->
 <div id="modalDesodorante" class="modal">
     <div class="modal-content">
         <h2 id="modalTituloDesodorante" style="margin-bottom: 20px; color: #34495e;">Agregar Desodorante</h2>
-        <form id="formDesodorante" method="POST" enctype="multipart/form-data">
+        <!-- IMPORTANTE: Añadir action con la URL correcta -->
+        <form id="formDesodorante" method="POST" enctype="multipart/form-data" 
+              action="{% url 'agregar_desodorante' %}">
             {% csrf_token %}
             
             <div class="form-grid">
                 <div class="form-group">
                     <label for="idDesodorante">ID *</label>
-                    <input type="text" id="idDesodorante" name="id" class="form-control" required 
+                    <!-- CAMBIADO: name="ID" (con mayúscula) para que coincida con la vista -->
+                    <input type="text" id="idDesodorante" name="ID" class="form-control" required 
                            placeholder="Ej: DEO-001" maxlength="50">
                 </div>
                 
@@ -400,14 +431,16 @@
             <div class="form-grid">
                 <div class="form-group">
                     <label for="precioDesodorante">Precio de Venta *</label>
+                    <!-- CAMBIADO: step="0.01" para aceptar decimales -->
                     <input type="number" id="precioDesodorante" name="precio" class="form-control" 
-                           min="0" step="1" required placeholder="0">
+                           min="0" step="0.01" required placeholder="0">
                 </div>
                 
                 <div class="form-group">
                     <label for="precioInvDesodorante">Precio de Inversión</label>
+                    <!-- CAMBIADO: step="0.01" para aceptar decimales -->
                     <input type="number" id="precioInvDesodorante" name="precio_inv" class="form-control" 
-                           min="0" step="1" placeholder="0">
+                           min="0" step="0.01" placeholder="0">
                 </div>
             </div>
             
@@ -446,21 +479,26 @@
             <div class="form-group">
                 <label for="imagenDesodorante">Imagen del Desodorante</label>
                 <div class="file-input-wrapper">
-                    <div class="file-input-label" id="fileInputLabel">
+                    <div class="file-input-label" id="fileInputLabelDesodorante">
                         <i class="fas fa-cloud-upload-alt"></i> 
                         <span>Haz clic para seleccionar una imagen</span>
-                        <div class="file-name" id="fileName">No se ha seleccionado ningún archivo</div>
+                        <div class="file-name" id="fileNameDesodorante">No se ha seleccionado ningún archivo</div>
                     </div>
-                    <input type="file" id="imagenDesodorante" name="imagen" class="form-control" 
-                           accept="image/*">
+                    <input type="file" id="imagenDesodorante" name="imagen" accept="image/*">
                 </div>
             </div>
             
+            <!-- Campo oculto para estado activo -->
+            <div style="display: none;">
+                <input type="checkbox" id="activoDesodorante" name="activo" checked>
+            </div>
+            
             <div class="action-buttons">
-                <button type="submit" class="btn btn-success">
+                <!-- CAMBIADO: type="button" y id para manejar con JS -->
+                <button type="button" id="btnGuardarDesodorante" class="btn btn-success">
                     <i class="fas fa-save"></i> Guardar Desodorante
                 </button>
-                <button type="button" class="btn btn-danger" onclick="cerrarModalDesodorante()">
+                <button type="button" class="btn btn-danger" id="btnCancelarDesodorante">
                     <i class="fas fa-times"></i> Cancelar
                 </button>
             </div>
@@ -469,104 +507,340 @@
 </div>
 
 <script>
-    // Script mejorado para el formulario de desodorantes
-    console.log("✅ Script de desodorantes cargado");
+// ============================================
+// GESTIÓN DE DESODORANTES - SCRIPT COMPLETO
+// ============================================
+
+console.log("✅ Script de gestión de desodorantes cargado");
+
+// ============================================
+// 1. VARIABLES GLOBALES Y ELEMENTOS
+// ============================================
+
+let modalDesodoranteElement = null;
+let formDesodoranteElement = null;
+let btnGuardarDesodorante = null;
+let btnAbrirModalAgregarDesodorante = null;
+let btnAbrirModalDesdeVacioDesodorante = null;
+
+// ============================================
+// 2. FUNCIONES PRINCIPALES
+// ============================================
+
+function abrirModalCrearDesodorante() {
+    console.log("🎯 Abriendo modal para crear desodorante...");
     
-    function abrirModalCrear() {
-        console.log("Abriendo modal para crear desodorante...");
-        document.getElementById('modalTituloDesodorante').textContent = 'Agregar Desodorante';
-        document.getElementById('formDesodorante').reset();
-        document.getElementById('fileName').textContent = 'No se ha seleccionado ningún archivo';
-        document.getElementById('modalDesodorante').classList.add('active');
+    // Cambiar título
+    document.getElementById('modalTituloDesodorante').textContent = 'Agregar Desodorante';
+    
+    // Limpiar formulario
+    if (formDesodoranteElement) {
+        formDesodoranteElement.reset();
     }
-
-    function cerrarModalDesodorante() {
-        document.getElementById('modalDesodorante').classList.remove('active');
+    
+    // Limpiar nombre de archivo
+    const fileNameElement = document.getElementById('fileNameDesodorante');
+    if (fileNameElement) {
+        fileNameElement.textContent = 'No se ha seleccionado ningún archivo';
     }
-
-    function editarDesodorante(id) {
-        console.log('Editando desodorante ID:', id);
-        document.getElementById('modalTituloDesodorante').textContent = 'Editar Desodorante';
-        // Aquí cargarías los datos del desodorante para editar
-        document.getElementById('modalDesodorante').classList.add('active');
+    
+    // Mostrar modal
+    if (modalDesodoranteElement) {
+        modalDesodoranteElement.classList.add('active');
+        console.log("✅ Modal de desodorante abierto correctamente");
+    } else {
+        console.error("❌ No se encontró el elemento modal de desodorante");
     }
+}
 
-    function eliminarDesodorante(id) {
-        if (confirm('¿Estás seguro de eliminar este desodorante?')) {
-            console.log('Eliminando desodorante ID:', id);
-            alert('Desodorante eliminado (simulación)');
+function cerrarModalDesodorante() {
+    console.log("🔒 Cerrando modal de desodorante...");
+    if (modalDesodoranteElement) {
+        modalDesodoranteElement.classList.remove('active');
+    }
+}
+
+function editarDesodorante(id) {
+    console.log('✏️ Editando desodorante ID:', id);
+    alert('Funcionalidad de edición en desarrollo para ID: ' + id);
+    // Aquí cargarías los datos del desodorante para editar
+    // abrirModalCrearDesodorante();
+}
+
+function eliminarDesodorante(id) {
+    if (confirm('¿Estás seguro de eliminar este desodorante?')) {
+        console.log('🗑️ Eliminando desodorante ID:', id);
+        alert('Desodorante ' + id + ' eliminado (simulación)');
+    }
+}
+
+function exportarDatosDesodorantes() {
+    console.log('📊 Exportando datos de desodorantes...');
+    alert('Funcionalidad de exportación en desarrollo');
+}
+
+// ============================================
+// 3. MANEJO DE ARCHIVOS
+// ============================================
+
+function configurarManejadorArchivosDesodorante() {
+    const inputArchivo = document.getElementById('imagenDesodorante');
+    if (inputArchivo) {
+        inputArchivo.addEventListener('change', function(e) {
+            const fileName = e.target.files[0] ? e.target.files[0].name : 'No se ha seleccionado ningún archivo';
+            const fileNameElement = document.getElementById('fileNameDesodorante');
+            if (fileNameElement) {
+                fileNameElement.textContent = fileName;
+            }
+        });
+        console.log("✅ Manejador de archivos de desodorante configurado");
+    }
+}
+
+// ============================================
+// 4. ENVÍO DE FORMULARIO
+// ============================================
+
+async function enviarFormularioDesodorante() {
+    console.log("📤 Enviando formulario de desodorante...");
+    
+    // Validación básica
+    const id = document.getElementById('idDesodorante')?.value.trim();
+    const marca = document.getElementById('marcaDesodorante')?.value.trim();
+    const precio = document.getElementById('precioDesodorante')?.value;
+    const genero = document.getElementById('generoDesodorante')?.value;
+    const tamano = document.getElementById('tamanoDesodorante')?.value;
+    const duracion = document.getElementById('duracionDesodorante')?.value;
+    const cantidad = document.getElementById('cantidadDesodorante')?.value;
+    
+    console.log("📝 Datos del desodorante:", {id, marca, precio, genero, tamano, duracion, cantidad});
+    
+    if (!id || !marca || !precio || !genero || !tamano || !duracion || !cantidad) {
+        alert('❌ Por favor complete todos los campos obligatorios (*)');
+        return false;
+    }
+    
+    if (parseFloat(precio) <= 0) {
+        alert('❌ El precio debe ser mayor a 0');
+        return false;
+    }
+    
+    if (parseInt(tamano) <= 0) {
+        alert('❌ El tamaño debe ser mayor a 0');
+        return false;
+    }
+    
+    if (parseInt(duracion) <= 0) {
+        alert('❌ La duración debe ser mayor a 0');
+        return false;
+    }
+    
+    if (parseInt(cantidad) < 0) {
+        alert('❌ La cantidad no puede ser negativa');
+        return false;
+    }
+    
+    try {
+        // Crear FormData
+        const formData = new FormData(formDesodoranteElement);
+        
+        // Mostrar indicador de carga
+        const btnOriginalHTML = btnGuardarDesodorante.innerHTML;
+        btnGuardarDesodorante.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
+        btnGuardarDesodorante.disabled = true;
+        
+        // Obtener URL del formulario
+        const url = formDesodoranteElement.getAttribute('action');
+        
+        // Obtener token CSRF
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value;
+        
+        if (!csrfToken) {
+            throw new Error('Token CSRF no encontrado');
+        }
+        
+        console.log("🌐 Enviando datos a:", url);
+        
+        // Enviar datos con Fetch API
+        const response = await fetch(url, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': csrfToken
+            }
+        });
+        
+        console.log("📨 Respuesta recibida:", response.status);
+        
+        const data = await response.json();
+        console.log("📊 Datos respuesta:", data);
+        
+        if (data.success) {
+            console.log('✅ Desodorante guardado exitosamente');
+            
+            // Mostrar mensaje de éxito
+            alert(data.message || `🎉 Desodorante "${data.nombre}" guardado exitosamente`);
+            
+            // Cerrar modal
+            cerrarModalDesodorante();
+            
+            // Recargar la página para ver los cambios
+            setTimeout(() => {
+                window.location.reload();
+            }, 1500);
+            
+        } else {
+            // Mostrar error
+            console.error('❌ Error al guardar:', data.error);
+            alert('❌ Error: ' + (data.error || 'Error desconocido'));
+        }
+        
+    } catch (error) {
+        console.error('❌ Error en la solicitud:', error);
+        alert('❌ Error al conectar con el servidor. Por favor, intente nuevamente.');
+    } finally {
+        // Restaurar botón
+        if (btnGuardarDesodorante) {
+            btnGuardarDesodorante.innerHTML = '<i class="fas fa-save"></i> Guardar Desodorante';
+            btnGuardarDesodorante.disabled = false;
         }
     }
-
-    function exportarDatos() {
-        alert('Exportando datos de desodorantes...');
-    }
-
-    // Manejo de la selección de archivos
-    document.getElementById('imagenDesodorante').addEventListener('change', function(e) {
-        const fileName = e.target.files[0] ? e.target.files[0].name : 'No se ha seleccionado ningún archivo';
-        document.getElementById('fileName').textContent = fileName;
-    });
-
-    // Event listeners para el modal y formulario
-    const modalElement = document.getElementById('modalDesodorante');
-    const formElement = document.getElementById('formDesodorante');
     
-    if (modalElement) {
-        modalElement.addEventListener('click', function(e) {
+    return false;
+}
+
+// ============================================
+// 5. CONFIGURACIÓN DE EVENTOS
+// ============================================
+
+function configurarEventosDesodorantes() {
+    console.log("🔧 Configurando eventos de desodorantes...");
+    
+    // 1. Botones para abrir modal
+    if (btnAbrirModalAgregarDesodorante) {
+        btnAbrirModalAgregarDesodorante.addEventListener('click', abrirModalCrearDesodorante);
+        console.log("✅ Botón 'Agregar Desodorante' configurado");
+    }
+    
+    if (btnAbrirModalDesdeVacioDesodorante) {
+        btnAbrirModalDesdeVacioDesodorante.addEventListener('click', abrirModalCrearDesodorante);
+        console.log("✅ Botón 'Agregar Primer Desodorante' configurado");
+    }
+    
+    // 2. Botón exportar
+    const btnExportarDesodorantes = document.getElementById('btnExportarDesodorantes');
+    if (btnExportarDesodorantes) {
+        btnExportarDesodorantes.addEventListener('click', exportarDatosDesodorantes);
+    }
+    
+    // 3. Cerrar modal al hacer clic fuera
+    if (modalDesodoranteElement) {
+        modalDesodoranteElement.addEventListener('click', function(e) {
             if (e.target === this) {
                 cerrarModalDesodorante();
             }
         });
+        console.log("✅ Evento para cerrar modal de desodorante configurado");
     }
     
-    if (formElement) {
-        formElement.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            // Validación básica
-            const id = document.getElementById('idDesodorante').value;
-            const marca = document.getElementById('marcaDesodorante').value;
-            const precio = document.getElementById('precioDesodorante').value;
-            const genero = document.getElementById('generoDesodorante').value;
-            const tamano = document.getElementById('tamanoDesodorante').value;
-            const duracion = document.getElementById('duracionDesodorante').value;
-            const cantidad = document.getElementById('cantidadDesodorante').value;
-            
-            if (!id || !marca || !precio || !genero || !tamano || !duracion || !cantidad) {
-                alert('Por favor complete todos los campos obligatorios (*)');
-                return;
-            }
-            
-            // Simular envío exitoso
-            console.log('Datos del desodorante:', {
-                id: id,
-                marca: marca,
-                descripcion: document.getElementById('descripcionDesodorante').value,
-                precio: precio,
-                precio_inv: document.getElementById('precioInvDesodorante').value,
-                genero: genero,
-                tamano: tamano,
-                duracion: duracion,
-                cantidad: cantidad,
-                imagen: document.getElementById('imagenDesodorante').files[0]?.name
-            });
-            
-            alert(`Desodorante "${marca}" guardado exitosamente`);
-            cerrarModalDesodorante();
-            
-            // En un caso real, aquí harías submit real del formulario
-            // this.submit();
-        });
+    // 4. Enviar formulario
+    if (btnGuardarDesodorante) {
+        btnGuardarDesodorante.addEventListener('click', enviarFormularioDesodorante);
+        console.log("✅ Botón 'Guardar Desodorante' configurado");
     }
-
-    // Prevenir envío con Enter en inputs individuales
-    document.querySelectorAll('.form-control').forEach(input => {
+    
+    // 5. Botón cancelar
+    const btnCancelarDesodorante = document.getElementById('btnCancelarDesodorante');
+    if (btnCancelarDesodorante) {
+        btnCancelarDesodorante.addEventListener('click', cerrarModalDesodorante);
+    }
+    
+    // 6. Prevenir envío con Enter en inputs individuales
+    document.querySelectorAll('#formDesodorante .form-control').forEach(input => {
         input.addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 e.preventDefault();
+                // Enfocar siguiente campo
+                const form = document.getElementById('formDesodorante');
+                const index = Array.from(form.elements).indexOf(this);
+                if (index > -1 && index < form.elements.length - 1) {
+                    form.elements[index + 1].focus();
+                }
             }
         });
     });
+    
+    // 7. Manejar submit del formulario
+    if (formDesodoranteElement) {
+        formDesodoranteElement.addEventListener('submit', function(e) {
+            e.preventDefault();
+            enviarFormularioDesodorante();
+        });
+    }
+}
+
+// ============================================
+// 6. INICIALIZACIÓN
+// ============================================
+
+function inicializarDesodorantes() {
+    console.log("🚀 Inicializando gestión de desodorantes...");
+    
+    // Obtener referencias a elementos
+    modalDesodoranteElement = document.getElementById('modalDesodorante');
+    formDesodoranteElement = document.getElementById('formDesodorante');
+    btnGuardarDesodorante = document.getElementById('btnGuardarDesodorante');
+    btnAbrirModalAgregarDesodorante = document.getElementById('btnAbrirModalAgregarDesodorante');
+    btnAbrirModalDesdeVacioDesodorante = document.getElementById('btnAbrirModalDesdeVacioDesodorante');
+    
+    console.log("🔍 Elementos encontrados:", {
+        modal: !!modalDesodoranteElement,
+        form: !!formDesodoranteElement,
+        btnGuardar: !!btnGuardarDesodorante,
+        btnAbrir: !!btnAbrirModalAgregarDesodorante,
+        btnVacio: !!btnAbrirModalDesdeVacioDesodorante
+    });
+    
+    // Configurar manejadores
+    configurarManejadorArchivosDesodorante();
+    configurarEventosDesodorantes();
+    
+    console.log("🎉 Sistema de desodorantes inicializado correctamente");
+}
+
+// ============================================
+// 7. EJECUCIÓN AL CARGAR LA PÁGINA
+// ============================================
+
+// Esperar a que el DOM esté completamente cargado
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', inicializarDesodorantes);
+} else {
+    // DOM ya está cargado
+    inicializarDesodorantes();
+}
+
+// También exportar funciones globalmente para onclick inline
+window.abrirModalCrear = abrirModalCrearDesodorante;
+window.cerrarModalDesodorante = cerrarModalDesodorante;
+window.editarDesodorante = editarDesodorante;
+window.eliminarDesodorante = eliminarDesodorante;
+window.exportarDatos = exportarDatosDesodorantes;
+
+console.log("🌐 Funciones globales de desodorantes expuestas");
+
+// ============================================
+// 8. CÓDIGO DE EMERGENCIA (DEBUG)
+// ============================================
+
+setTimeout(function() {
+    // Verificar si los botones responden
+    const testButton = document.createElement('button');
+    testButton.textContent = 'TEST - Abrir Modal Desodorante';
+    testButton.style.cssText = 'position:fixed;top:10px;right:10px;z-index:9999;padding:10px;background:blue;color:white;';
+    testButton.onclick = abrirModalCrearDesodorante;
+    document.body.appendChild(testButton);
+    console.log('🔵 Botón de prueba de desodorante añadido');
+}, 1000);
 </script>
 {% endblock %}
