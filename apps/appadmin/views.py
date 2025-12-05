@@ -419,8 +419,8 @@ def agregar_desodorante(request):
 def agregar_crema(request):
     if request.method == 'POST':
         try:
-            # Obtener datos - CORREGIDO: nombres de campos
-            idcrema = request.POST.get('idcrema')  # Debe coincidir con name="idcrema" en HTML
+            
+            idcrema = request.POST.get('idcrema')  
             marca = request.POST.get('marca')
             descripcion = request.POST.get('descripcion')
             precio = request.POST.get('precio')
@@ -429,18 +429,18 @@ def agregar_crema(request):
             cantidad = request.POST.get('cantidad')
             imagen = request.FILES.get('imagen')
             
-            # Validar campos obligatorios - CORREGIDO: agregar marca y cantidad
+            
             if not idcrema or not marca or not precio or not tamano:
                 return JsonResponse({
                     'success': False,
                     'error': 'Faltan campos obligatorios'
                 }, status=400)
             
-            # CORREGIDO: El modelo no puede llamarse 'cremas' (es la variable)
-            # Debe llamarse 'Crema' o como tengas definido el modelo
-            crema = cremas.objects.create(  # Cambiado el nombre del modelo
-                idcremas=idcrema,  # Campo ID en el modelo
-                marca=marca,  # ¡IMPORTANTE! Falta en tu código original
+           
+          
+            crema = cremas.objects.create(  
+                idcremas=idcrema,  
+                marca=marca,  
                 descripcion=descripcion,
                 precio=float(precio),
                 precio_inv=float(precio_inv) if precio_inv else None,
@@ -483,3 +483,256 @@ def eliminar_crema(request,idcremas):
         crema=get_object_or_404(cremas,idcremas=idcremas)
         crema.delete()
     return redirect('cremasadmin')     
+
+
+
+def obtener_perfume(request, nombre):
+    """Vista para obtener datos de un perfume en formato JSON"""
+    try:
+        perfume = perfumes.objects.get(nombre=nombre)
+        data = {
+            'success': True,
+            'nombre': perfume.nombre,
+            'descripcion': perfume.descripcion,
+            'precio': float(perfume.precio) if perfume.precio else 0,
+            'precio_inv': float(perfume.precio_inv) if perfume.precio_inv else None,
+            'genero': perfume.genero,
+            'tamano': perfume.tamano,
+            'imagen_url': perfume.imagen.url if perfume.imagen and hasattr(perfume.imagen, 'url') else None,
+        }
+        return JsonResponse(data)
+    except perfumes.DoesNotExist:
+        return JsonResponse({'success': False, 'error': 'Perfume no encontrado'}, status=404)
+    except Exception as e:
+        print(f"Error en obtener_perfume: {str(e)}")
+        return JsonResponse({'success': False, 'error': str(e)}, status=500)
+
+@csrf_exempt
+def editar_perfume(request, nombre):
+    """Vista para editar un perfume existente"""
+    if request.method == 'POST':
+        try:
+            print(f"Editando perfume: {nombre}")
+            print(f"Datos recibidos: {dict(request.POST)}")
+            print(f"Archivos recibidos: {dict(request.FILES)}")
+            
+            perfume = perfumes.objects.get(nombre=nombre)
+            
+            # Actualizar campos
+            if 'descripcion' in request.POST:
+                perfume.descripcion = request.POST['descripcion']
+            
+            if 'precio' in request.POST:
+                perfume.precio = request.POST['precio']
+            
+            if 'precio_inv' in request.POST and request.POST['precio_inv']:
+                perfume.precio_inv = request.POST['precio_inv']
+            else:
+                perfume.precio_inv = None
+            
+            if 'genero' in request.POST:
+                perfume.genero = request.POST['genero']
+            
+            if 'tamano' in request.POST:
+                perfume.tamano = request.POST['tamano']
+            
+            # Manejar imagen si se subió una nueva
+            if 'imagen' in request.FILES:
+                perfume.imagen = request.FILES['imagen']
+                print(f"Nueva imagen subida: {request.FILES['imagen'].name}")
+            
+            perfume.save()
+            print("✅ Perfume actualizado exitosamente")
+            
+            return JsonResponse({
+                'success': True,
+                'message': f'Perfume "{perfume.nombre}" actualizado exitosamente',
+                'nombre': perfume.nombre
+            })
+            
+        except perfumes.DoesNotExist:
+            print(f"❌ Perfume no encontrado: {nombre}")
+            return JsonResponse({
+                'success': False,
+                'error': 'Perfume no encontrado'
+            }, status=404)
+        except Exception as e:
+            print(f"❌ Error al editar perfume: {str(e)}")
+            return JsonResponse({
+                'success': False,
+                'error': str(e)
+            }, status=500)
+    
+    return JsonResponse({'success': False, 'error': 'Método no permitido'}, status=405)
+def obtener_crema(request, id):
+    """Vista para obtener datos de una crema en formato JSON"""
+    try:
+        crema = cremas.objects.get(idcremas=id)
+        data = {
+            'success': True,
+            'idcremas': crema.idcremas,
+            'marca': crema.marca,
+            'descripcion': crema.descripcion,
+            'precio': float(crema.precio) if crema.precio else 0,
+            'precio_inv': float(crema.precio_inv) if crema.precio_inv else None,
+            'tamano': crema.tamano,
+            'cantidad': crema.cantidad,
+            'imagen_url': crema.imagen.url if crema.imagen and hasattr(crema.imagen, 'url') else None,
+        }
+        return JsonResponse(data)
+    except cremas.DoesNotExist:
+        return JsonResponse({'success': False, 'error': 'Crema no encontrada'}, status=404)
+    except Exception as e:
+        print(f"Error en obtener_crema: {str(e)}")
+        return JsonResponse({'success': False, 'error': str(e)}, status=500)
+
+@csrf_exempt
+def editar_crema(request, id):
+    """Vista para editar una crema existente"""
+    if request.method == 'POST':
+        try:
+            print(f"Editando crema: {id}")
+            print(f"Datos recibidos: {dict(request.POST)}")
+            print(f"Archivos recibidos: {dict(request.FILES)}")
+            
+            crema = cremas.objects.get(idcremas=id)
+            
+            # Actualizar campos
+            if 'marca' in request.POST:
+                crema.marca = request.POST['marca']
+            
+            if 'descripcion' in request.POST:
+                crema.descripcion = request.POST['descripcion']
+            
+            if 'precio' in request.POST:
+                crema.precio = request.POST['precio']
+            
+            if 'precio_inv' in request.POST and request.POST['precio_inv']:
+                crema.precio_inv = request.POST['precio_inv']
+            else:
+                crema.precio_inv = None
+            
+            if 'tamano' in request.POST:
+                crema.tamano = request.POST['tamano']
+            
+            if 'cantidad' in request.POST:
+                crema.cantidad = request.POST['cantidad']
+            
+            # Manejar imagen si se subió una nueva
+            if 'imagen' in request.FILES:
+                crema.imagen = request.FILES['imagen']
+                print(f"Nueva imagen subida: {request.FILES['imagen'].name}")
+            
+            crema.save()
+            print("✅ Crema actualizada exitosamente")
+            
+            return JsonResponse({
+                'success': True,
+                'message': f'Crema "{crema.idcremas}" actualizada exitosamente',
+                'idcremas': crema.idcremas
+            })
+            
+        except cremas.DoesNotExist:
+            print(f"❌ Crema no encontrada: {id}")
+            return JsonResponse({
+                'success': False,
+                'error': 'Crema no encontrada'
+            }, status=404)
+        except Exception as e:
+            print(f"❌ Error al editar crema: {str(e)}")
+            return JsonResponse({
+                'success': False,
+                'error': str(e)
+            }, status=500)
+    
+    return JsonResponse({'success': False, 'error': 'Método no permitido'}, status=405)
+def obtener_desodorante(request, id):
+    """Vista para obtener datos de un desodorante en formato JSON"""
+    try:
+        desodorante = desodorantes.objects.get(id=id)
+        data = {
+            'success': True,
+            'id': desodorante.id,
+            'marca': desodorante.marca,
+            'descripcion': desodorante.descripcion,
+            'precio': float(desodorante.precio) if desodorante.precio else 0,
+            'precio_inv': float(desodorante.precio_inv) if desodorante.precio_inv else None,
+            'genero': desodorante.genero,
+            'tamano': desodorante.tamano,
+            'duracion': desodorante.duracion,
+            'cantidad': desodorante.cantidad,
+            'imagen_url': desodorante.imagen.url if desodorante.imagen and hasattr(desodorante.imagen, 'url') else None,
+        }
+        return JsonResponse(data)
+    except desodorantes.DoesNotExist:
+        return JsonResponse({'success': False, 'error': 'Desodorante no encontrado'}, status=404)
+    except Exception as e:
+        print(f"Error en obtener_desodorante: {str(e)}")
+        return JsonResponse({'success': False, 'error': str(e)}, status=500)
+
+@csrf_exempt
+def editar_desodorante(request, id):
+    """Vista para editar un desodorante existente"""
+    if request.method == 'POST':
+        try:
+            print(f"Editando desodorante: {id}")
+            print(f"Datos recibidos: {dict(request.POST)}")
+            print(f"Archivos recibidos: {dict(request.FILES)}")
+            
+            desodorante = desodorantes.objects.get(id=id)
+            
+            # Actualizar campos
+            if 'marca' in request.POST:
+                desodorante.marca = request.POST['marca']
+            
+            if 'descripcion' in request.POST:
+                desodorante.descripcion = request.POST['descripcion']
+            
+            if 'precio' in request.POST:
+                desodorante.precio = request.POST['precio']
+            
+            if 'precio_inv' in request.POST and request.POST['precio_inv']:
+                desodorante.precio_inv = request.POST['precio_inv']
+            else:
+                desodorante.precio_inv = None
+            
+            if 'genero' in request.POST:
+                desodorante.genero = request.POST['genero']
+            
+            if 'tamano' in request.POST:
+                desodorante.tamano = request.POST['tamano']
+            
+            if 'duracion' in request.POST:
+                desodorante.duracion = request.POST['duracion']
+            
+            if 'cantidad' in request.POST:
+                desodorante.cantidad = request.POST['cantidad']
+            
+            # Manejar imagen si se subió una nueva
+            if 'imagen' in request.FILES:
+                desodorante.imagen = request.FILES['imagen']
+                print(f"Nueva imagen subida: {request.FILES['imagen'].name}")
+            
+            desodorante.save()
+            print("✅ Desodorante actualizado exitosamente")
+            
+            return JsonResponse({
+                'success': True,
+                'message': f'Desodorante "{desodorante.id}" actualizado exitosamente',
+                'id': desodorante.id
+            })
+            
+        except desodorantes.DoesNotExist:
+            print(f"❌ Desodorante no encontrado: {id}")
+            return JsonResponse({
+                'success': False,
+                'error': 'Desodorante no encontrado'
+            }, status=404)
+        except Exception as e:
+            print(f"❌ Error al editar desodorante: {str(e)}")
+            return JsonResponse({
+                'success': False,
+                'error': str(e)
+            }, status=500)
+    
+    return JsonResponse({'success': False, 'error': 'Método no permitido'}, status=405)

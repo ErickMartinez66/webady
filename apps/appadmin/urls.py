@@ -2,8 +2,7 @@ from django.contrib import admin
 from django.conf import settings
 from django.conf.urls.static import static 
 from django.urls import path,include
-from .views import panel_control,gestion_perfumes,gestion_cremas,gestion_desodorantes,actualizar_viaje,eliminar_viaje,login_user,agregar_viaje,agregar_fuente,actualizar_fuente,agregar_perfume,agregar_desodorante,agregar_crema,eliminar_perfume,eliminar_desodorante,eliminar_crema
-
+from .views import panel_control,gestion_perfumes,gestion_cremas,gestion_desodorantes,actualizar_viaje,eliminar_viaje,login_user,agregar_viaje,agregar_fuente,actualizar_fuente,agregar_perfume,agregar_desodorante,agregar_crema,eliminar_perfume,eliminar_desodorante,eliminar_crema,obtener_perfume,editar_perfume,obtener_crema,editar_crema,obtener_desodorante,editar_desodorante
 
 
 
@@ -28,7 +27,11 @@ urlpatterns = [
     path('actualizar_fuente/<str:viaje_fecha>/',actualizar_fuente, name='actualizar_fuente'),
     path('agregar_perfume',agregar_perfume, name='agregar_perfume'),
     path('agregar_desodorante',agregar_desodorante, name='agregar_desodorante'),
-    path('agregar_crema',agregar_crema, name='agregar_crema')
-    
-    
+    path('agregar_crema',agregar_crema, name='agregar_crema'),
+    path('obtener-perfume/<str:nombre>/', obtener_perfume, name='obtener_perfume'),
+    path('editar-perfume/<str:nombre>/', editar_perfume, name='editar_perfume'),
+    path('obtener-crema/<str:id>/', obtener_crema, name='obtener_crema'),
+    path('editar-crema/<str:id>/', editar_crema, name='editar_crema'),
+    path('obtener-desodorante/<str:id>/', obtener_desodorante, name='obtener_desodorante'),
+    path('editar-desodorante/<str:id>/', editar_desodorante, name='editar_desodorante'),
 ]
