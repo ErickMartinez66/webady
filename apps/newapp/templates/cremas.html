@@ -132,6 +132,8 @@
             align-items: center;
             gap: 8px;
             font-size: 0.95rem;
+            border: none;
+            outline: none;
         }
 
         .filter-btn.active, .filter-btn:hover {
@@ -142,7 +144,7 @@
             box-shadow: var(--shadow);
         }
 
-        /* Grid de perfumes mejorado */
+        /* Grid de productos mejorado */
         .perfumes-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
@@ -164,6 +166,7 @@
             text-decoration: none;
             color: inherit;
             border: 1px solid var(--gray-200);
+            cursor: pointer;
         }
 
         .perfume-card:hover {
@@ -255,6 +258,7 @@
             margin-bottom: 16px;
         }
 
+        /* CORRECCIONES AQUÍ: Cambié las clases específicas a genéricas */
         .perfume-nombre {
             font-size: 1.5rem;
             color: var(--dark);
@@ -262,6 +266,7 @@
             margin-bottom: 8px;
             line-height: 1.3;
             letter-spacing: -0.01em;
+            flex: 1;
         }
 
         .perfume-genero {
@@ -272,6 +277,7 @@
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.5px;
+            white-space: nowrap;
         }
 
         .genero-m {
@@ -299,7 +305,7 @@
             font-size: 0.95rem;
             flex-grow: 1;
             display: -webkit-box;
-            
+            -webkit-line-clamp: 3;
             -webkit-box-orient: vertical;
             overflow: hidden;
         }
@@ -311,6 +317,16 @@
             margin-top: auto;
             padding-top: 20px;
             border-top: 1px solid var(--gray-200);
+            gap: 10px;
+        }
+
+        .perfume-marca {
+            font-size: 0.9rem;
+            color: var(--text-light);
+            background: var(--gray-100);
+            padding: 4px 12px;
+            border-radius: 6px;
+            flex-shrink: 0;
         }
 
         .perfume-precio {
@@ -320,6 +336,7 @@
             display: flex;
             align-items: center;
             gap: 4px;
+            flex-shrink: 0;
         }
 
         .perfume-precio::before {
@@ -335,6 +352,7 @@
             background: var(--gray-100);
             padding: 6px 12px;
             border-radius: 8px;
+            flex-shrink: 0;
         }
 
         .perfume-actions {
@@ -428,6 +446,12 @@
             box-shadow: 0 -5px 20px rgba(0,0,0,0.03);
         }
 
+        /* Clase para botón activo */
+        .filter-btn.active {
+            background: var(--primary);
+            color: white;
+        }
+
         /* Responsive */
         @media (max-width: 1024px) {
             .perfumes-grid {
@@ -458,6 +482,12 @@
             .perfume-content {
                 padding: 24px;
             }
+            
+            .perfume-details {
+                flex-wrap: wrap;
+                justify-content: flex-start;
+                gap: 8px;
+            }
         }
 
         @media (max-width: 480px) {
@@ -480,6 +510,26 @@
             .perfume-actions {
                 flex-direction: column;
             }
+            
+            .filter-btn {
+                flex: 1;
+                min-width: 120px;
+                justify-content: center;
+            }
+            
+            .filters {
+                justify-content: center;
+            }
+            
+            .perfume-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .perfume-genero {
+                align-self: flex-start;
+            }
         }
 
         /* Animaciones suaves */
@@ -498,6 +548,25 @@
 
         .perfume-card:nth-child(even) {
             animation-delay: 0.2s;
+        }
+
+        /* Estilo para cuando no hay imágenes */
+        .perfume-imagen .fa-venus,
+        .perfume-imagen .fa-mars,
+        .perfume-imagen .fa-venus-mars {
+            font-size: 5rem;
+            color: var(--primary);
+        }
+
+        /* Agregar esta regla para los botones dentro de las tarjetas */
+        .perfume-card button {
+            font-family: inherit;
+        }
+
+        /* Corregir el badge de oferta (en el HTML usas 'perfume' en lugar de 'crema') */
+        .perfume-badge {
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
     </style>
 </head>
@@ -541,7 +610,7 @@
                     <div class="perfume-badge badge-new">Nuevo</div>
                     {% elif forloop.counter <= 5 %}
                     <div class="perfume-badge badge-popular">Popular</div>
-                    {% elif perfume.precio < 70 %}
+                    {% elif crema.precio < 70 %}  <!-- CORRECCIÓN: cambia 'perfume' por 'crema' -->
                     <div class="perfume-badge badge-sale">Oferta</div>
                     {% endif %}
                     
@@ -579,7 +648,7 @@
                         </div>
                         
                         <div class="perfume-actions">
-                           
+                            <button class="btn btn-primary">
                                 <i class="fas fa-shopping-cart"></i> Comprar ahora
                             </button>
                             <button class="btn btn-secondary btn-favorite" onclick="event.preventDefault(); toggleFavorite(this)">
@@ -592,8 +661,8 @@
             {% else %}
                 <div class="empty-state">
                     <i class="fas fa-wind"></i>
-                    <h3>No hay perfumes disponibles</h3>
-                    <p>Estamos trabajando en nuevas fragancias exclusivas. Vuelve pronto para descubrir nuestra nueva colección.</p>
+                    <h3>No hay productos disponibles</h3>
+                    <p>Estamos trabajando en nuevos productos exclusivos. Vuelve pronto para descubrir nuestra nueva colección.</p>
                 </div>
             {% endif %}
         </div>
@@ -618,14 +687,14 @@
                     this.style.transform = '';
                 }, 150);
                 
-                // Filtrar perfumes
+                // Filtrar productos
                 const filter = this.textContent.toLowerCase();
-                filterPerfumes(filter);
+                filterProductos(filter);
             });
         });
 
         // Función de filtrado mejorada
-        function filterPerfumes(filter) {
+        function filterProductos(filter) {
             const cards = document.querySelectorAll('.perfume-card');
             let visibleCount = 0;
             
@@ -705,6 +774,14 @@
         document.querySelectorAll('.perfume-actions .btn').forEach(button => {
             button.addEventListener('click', function(event) {
                 event.stopPropagation();
+                event.preventDefault();
+                
+                // Si es el botón de comprar, mostrar alerta
+                if (this.classList.contains('btn-primary')) {
+                    const card = this.closest('.perfume-card');
+                    const nombre = card.querySelector('.perfume-nombre').textContent;
+                    alert(`¡Agregado al carrito: ${nombre}!`);
+                }
             });
         });
 
@@ -723,6 +800,23 @@
                     badge.style.transform = '';
                 }
             });
+        });
+
+        // Manejar clic en la tarjeta completa (excepto en botones)
+        document.querySelectorAll('.perfume-card').forEach(card => {
+            card.addEventListener('click', function(e) {
+                // Si el clic fue en un botón, no hacer nada (ya se maneja)
+                if (e.target.closest('.btn')) {
+                    return;
+                }
+                // Podrías navegar a la página de detalle aquí
+                // window.location.href = this.href;
+            });
+        });
+
+        // Inicializar con filtro "todos" por defecto
+        document.addEventListener('DOMContentLoaded', function() {
+            filterProductos('todos');
         });
     </script>
 </body>

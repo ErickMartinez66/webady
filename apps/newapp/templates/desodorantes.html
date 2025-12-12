@@ -132,6 +132,8 @@
             align-items: center;
             gap: 8px;
             font-size: 0.95rem;
+            border: none;
+            outline: none;
         }
 
         .filter-btn.active, .filter-btn:hover {
@@ -164,6 +166,7 @@
             text-decoration: none;
             color: inherit;
             border: 1px solid var(--gray-200);
+            cursor: pointer;
         }
 
         .perfume-card:hover {
@@ -255,7 +258,7 @@
             margin-bottom: 16px;
         }
 
-        .perfume-nombre {
+        .desodorantes-nombre {
             font-size: 1.5rem;
             color: var(--dark);
             font-weight: 700;
@@ -264,7 +267,7 @@
             letter-spacing: -0.01em;
         }
 
-        .perfume-genero {
+        .desodorantes-genero {
             display: inline-block;
             padding: 6px 16px;
             border-radius: 20px;
@@ -292,25 +295,34 @@
             border: 1px solid rgba(0, 210, 184, 0.2);
         }
 
-        .perfume-descripcion {
+        .desodorantes-descripcion {
             color: var(--text-light);
             line-height: 1.7;
             margin-bottom: 24px;
             font-size: 0.95rem;
             flex-grow: 1;
             display: -webkit-box;
-            
+            -webkit-line-clamp: 3;
             -webkit-box-orient: vertical;
             overflow: hidden;
         }
 
-        .perfume-details {
+        .desodorantes-details {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-top: auto;
             padding-top: 20px;
             border-top: 1px solid var(--gray-200);
+            gap: 10px;
+        }
+
+        .perfume-marca {
+            font-size: 0.9rem;
+            color: var(--text-light);
+            background: var(--gray-100);
+            padding: 4px 12px;
+            border-radius: 6px;
         }
 
         .perfume-precio {
@@ -428,6 +440,12 @@
             box-shadow: 0 -5px 20px rgba(0,0,0,0.03);
         }
 
+        /* Clase para botón activo */
+        .filter-btn.active {
+            background: var(--primary);
+            color: white;
+        }
+
         /* Responsive */
         @media (max-width: 1024px) {
             .perfumes-grid {
@@ -458,6 +476,12 @@
             .perfume-content {
                 padding: 24px;
             }
+            
+            .desodorantes-details {
+                flex-wrap: wrap;
+                justify-content: flex-start;
+                gap: 8px;
+            }
         }
 
         @media (max-width: 480px) {
@@ -480,6 +504,16 @@
             .perfume-actions {
                 flex-direction: column;
             }
+            
+            .filter-btn {
+                flex: 1;
+                min-width: 120px;
+                justify-content: center;
+            }
+            
+            .filters {
+                justify-content: center;
+            }
         }
 
         /* Animaciones suaves */
@@ -499,6 +533,19 @@
         .perfume-card:nth-child(even) {
             animation-delay: 0.2s;
         }
+
+        /* Mejoras para el formulario */
+        form {
+            margin: 0;
+        }
+
+        /* Estilo para cuando no hay imágenes */
+        .perfume-imagen .fa-venus,
+        .perfume-imagen .fa-mars,
+        .perfume-imagen .fa-venus-mars {
+            font-size: 5rem;
+            color: var(--primary);
+        }
     </style>
 </head>
 <body>
@@ -508,40 +555,39 @@
             <p class="page-subtitle">Descubre nuestra colección premium de fragancias únicas creadas para momentos inolvidables</p>
         </div>
 
-        <div class="filters-container">
-            <div class="filters-title">
-                <i class="fas fa-sliders-h"></i>
-                Filtrar por categoría
+        <form method="GET" action="{% url 'desodorantes' %}">
+            <div class="filters-container">
+                <div class="filters-title">
+                    <i class="fas fa-sliders-h"></i>
+                    Filtrar por categoría
+                </div>
+                <div class="filters">
+                    <button type="submit" name="boton" value="todos" class="filter-btn {% if boton_activo == 'todos' %}active{% endif %}">
+                        <i class="fas fa-th-large"></i>Todos
+                    </button>
+                    <button type="submit" name="boton" value="mujer" class="filter-btn {% if boton_activo == 'mujer' %}active{% endif %}">
+                        <i class="fas fa-venus"></i>Mujer
+                    </button>
+                    <button type="submit" name="boton" value="hombre" class="filter-btn {% if boton_activo == 'hombre' %}active{% endif %}">
+                        <i class="fas fa-mars"></i>Hombre
+                    </button>
+                    <button type="submit" name="boton" value="unisex" class="filter-btn {% if boton_activo == 'unisex' %}active{% endif %}">
+                        <i class="fas fa-venus-mars"></i>Unisex
+                    </button>
+                </div>
             </div>
-            <div class="filters">
-                <button class="filter-btn active">
-                    <i class="fas fa-th-large"></i>Todos
-                </button>
-                <button class="filter-btn">
-                    <i class="fas fa-venus"></i>Mujer
-                </button>
-                <button class="filter-btn">
-                    <i class="fas fa-mars"></i>Hombre
-                </button>
-                <button class="filter-btn">
-                    <i class="fas fa-venus-mars"></i>Unisex
-                </button>
-                <button class="filter-btn">
-                    <i class="fas fa-tag"></i>Ofertas
-                </button>
-            </div>
-        </div>
+        </form>
 
         <div class="perfumes-grid">
             {% if desodorantes %}
                 {% for desodorante in desodorantes %}
-                <a href="{% url 'desodorantes'%}" class="perfume-card">
+                <a href="{% url 'desodorantes' %}" class="perfume-card">
                     <!-- Badges dinámicos -->
                     {% if forloop.counter <= 2 %}
                     <div class="perfume-badge badge-new">Nuevo</div>
                     {% elif forloop.counter <= 5 %}
                     <div class="perfume-badge badge-popular">Popular</div>
-                    {% elif perfume.precio < 70 %}
+                    {% elif desodorante.precio < 70 %}
                     <div class="perfume-badge badge-sale">Oferta</div>
                     {% endif %}
                     
@@ -551,9 +597,12 @@
                                 <img src="{{ desodorante.imagen.url }}" alt="{{ desodorante.id }}">
                             {% else %}
                                 {# Iconos según género mejorados #}
-                                {% if desodorante.genero == 'M' %}🌊
-                                {% elif desodorante.genero == 'F' %}🌸
-                                {% else %}⚡
+                                {% if desodorante.genero == 'M' %}
+                                    <i class="fas fa-mars"></i>
+                                {% elif desodorante.genero == 'F' %}
+                                    <i class="fas fa-venus"></i>
+                                {% else %}
+                                    <i class="fas fa-venus-mars"></i>
                                 {% endif %}
                             {% endif %}
                         </div>
@@ -561,8 +610,8 @@
                     
                     <div class="perfume-content">
                         <div class="perfume-header">
-                            <h3 class="perfume-nombre">{{ desodorante.id }}</h3>
-                            <span class="perfume-genero genero-{{ perfume.genero|lower }}">
+                            <h3 class="desodorantes-nombre">{{ desodorante.id }}</h3>
+                            <span class="desodorantes-genero genero-{{ desodorante.genero|lower }}">
                                 {% if desodorante.genero == 'M' %}Hombre
                                 {% elif desodorante.genero == 'F' %}Mujer
                                 {% else %}Unisex
@@ -570,16 +619,16 @@
                             </span>
                         </div>
                         
-                        <p class="perfume-descripcion">{{ desodorante.descripcion }}</p>
+                        <p class="desodorantes-descripcion">{{ desodorante.descripcion }}</p>
                         
-                        <div class="perfume-details">
+                        <div class="desodorantes-details">
                             <div class="perfume-marca">{{ desodorante.marca }}</div>
                             <div class="perfume-precio">{{ desodorante.precio }}</div>
                             <div class="perfume-tamano">{{ desodorante.tamano }}ml</div>
                         </div>
                         
                         <div class="perfume-actions">
-                           
+                            <button class="btn btn-primary" onclick="event.preventDefault(); location.href='{% url 'desodorantes' %}'">
                                 <i class="fas fa-shopping-cart"></i> Comprar ahora
                             </button>
                             <button class="btn btn-secondary btn-favorite" onclick="event.preventDefault(); toggleFavorite(this)">
@@ -604,7 +653,7 @@
     </div>
 
     <script>
-        // Interactividad mejorada para los botones de filtro
+        // Interactividad para los botones de filtro
         document.querySelectorAll('.filter-btn').forEach(button => {
             button.addEventListener('click', function() {
                 document.querySelectorAll('.filter-btn').forEach(btn => {
@@ -617,57 +666,8 @@
                 setTimeout(() => {
                     this.style.transform = '';
                 }, 150);
-                
-                // Filtrar perfumes
-                const filter = this.textContent.toLowerCase();
-                filterPerfumes(filter);
             });
         });
-
-        // Función de filtrado mejorada
-        function filterPerfumes(filter) {
-            const cards = document.querySelectorAll('.perfume-card');
-            let visibleCount = 0;
-            
-            cards.forEach(card => {
-                const genderElement = card.querySelector('.perfume-genero');
-                if (!genderElement) return;
-                
-                const gender = genderElement.textContent.toLowerCase().trim();
-                const isSale = card.querySelector('.badge-sale');
-                
-                let shouldShow = false;
-                
-                if (filter === 'todos') {
-                    shouldShow = true;
-                } else if (filter === 'ofertas' && isSale) {
-                    shouldShow = true;
-                } else if (
-                    (filter === 'mujer' && gender === 'mujer') ||
-                    (filter === 'hombre' && gender === 'hombre') ||
-                    (filter === 'unisex' && gender === 'unisex')
-                ) {
-                    shouldShow = true;
-                }
-                
-                if (shouldShow) {
-                    card.style.display = 'flex';
-                    visibleCount++;
-                    // Animación de aparición
-                    card.style.animation = 'fadeIn 0.5s ease-out forwards';
-                } else {
-                    card.style.display = 'none';
-                }
-            });
-            
-            // Mostrar estado vacío si no hay resultados
-            const emptyState = document.querySelector('.empty-state');
-            if (visibleCount === 0 && emptyState) {
-                emptyState.style.display = 'block';
-            } else if (emptyState) {
-                emptyState.style.display = 'none';
-            }
-        }
 
         // Sistema de favoritos mejorado
         function toggleFavorite(button) {
@@ -722,6 +722,18 @@
                 if (badge) {
                     badge.style.transform = '';
                 }
+            });
+        });
+
+        // Función para manejar el clic en la tarjeta
+        document.querySelectorAll('.perfume-card').forEach(card => {
+            card.addEventListener('click', function(e) {
+                // Si el clic fue en un botón, no hacer nada (ya se maneja)
+                if (e.target.closest('.btn')) {
+                    return;
+                }
+                // Navegar al detalle del producto
+                window.location.href = this.href;
             });
         });
     </script>
