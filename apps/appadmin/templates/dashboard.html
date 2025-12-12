@@ -608,11 +608,7 @@
 </style>
 
 <!-- Debug temporal para ver qué datos llegan -->
-<div style="background: #fff3cd; padding: 10px; border-radius: 5px; margin-bottom: 20px; border-left: 4px solid #f39c12;">
-    <strong>🔍 Debug Info:</strong><br>
-    Total Productos: {{ total_productos }}<br>
-    Perfumes: {{ perfumes|length }}, Desodorantes: {{ desodorantes|length }}, Cremas: {{ cremas|length }}
-</div>
+
 
 <!-- Estadísticas principales -->
 <div class="stats-grid">
@@ -736,7 +732,7 @@
     </div>
 </div>
 <!-- Últimos productos agregados -->
-<h2>Últimos Productos Agregados</h2>
+<h2> Productos Agregados</h2>
 <div class="products-table">
     <table>
         <thead>
@@ -750,7 +746,7 @@
             </tr>
         </thead>
         <tbody>
-            {% for perfume in perfumes|slice:":5" %}
+            {% for perfume in perfumes %}
             <tr>
                 <td>
                     {% if perfume.imagen %}
@@ -769,7 +765,7 @@
                     <small>
                         {% if perfume.genero %}{{ perfume.genero }}<br>{% endif %}
                         {% if perfume.tamano %}{{ perfume.tamano }}<br>{% endif %}
-                        {% if perfume.fragancia %}{{ perfume.fragancia }}{% endif %}
+                       
                     </small>
                 </td>
                 <td>
@@ -778,7 +774,7 @@
             </tr>
             {% endfor %}
             
-            {% for desodorante in desodorantes|slice:":3" %}
+            {% for desodorante in desodorantes %}
             <tr>
                 <td>
                     {% if desodorante.imagen %}
@@ -789,14 +785,14 @@
                     </div>
                     {% endif %}
                 </td>
-                <td><strong>{{ desodorante.nombre }}</strong></td>
+                <td><strong>{{ desodorante.id }}</strong></td>
                 <td><span class="badge badge-info">Desodorante</span></td>
                 <td>${{ desodorante.precio }}</td>
                 <td>
                     <!-- Información específica de desodorantes -->
                     <small>
-                        {% if desodorante.tipo %}{{ desodorante.tipo }}<br>{% endif %}
-                        {% if desodorante.aroma %}{{ desodorante.aroma }}{% endif %}
+                        {% if desodorante.genero %}{{ desodorante.genero }}<br>{% endif %}
+                        {% if desodorante.duracion %}{{ desodorante.duracion }}{% endif %}
                     </small>
                 </td>
                 <td>
@@ -805,25 +801,25 @@
             </tr>
             {% endfor %}
             
-            {% for crema in cremas|slice:":2" %}
+            {% for crema in cremas%}
             <tr>
                 <td>
                     {% if crema.imagen %}
-                    <img src="{{ crema.imagen.url }}" class="product-image" alt="{{ crema.nombre }}">
+                    <img src="{{ crema.imagen.url }}" class="product-image" alt="{{ crema.idcremas }}">
                     {% else %}
                     <div class="product-image" style="background: #ecf0f1; display: flex; align-items: center; justify-content: center;">
                         🧴
                     </div>
                     {% endif %}
                 </td>
-                <td><strong>{{ crema.nombre }}</strong></td>
+                <td><strong>{{ crema.idcremas }}</strong></td>
                 <td><span class="badge badge-info">Crema</span></td>
                 <td>${{ crema.precio }}</td>
                 <td>
                     <!-- Información específica de cremas -->
                     <small>
-                        {% if crema.tipo %}{{ crema.tipo }}<br>{% endif %}
-                        {% if crema.beneficios %}{{ crema.beneficios }}{% endif %}
+                        {% if crema.marca %}{{ crema.marca }}<br>{% endif %}
+                        {% if crema.tamano %}{{ crema.tamano}}{% endif %}
                     </small>
                 </td>
                 <td>

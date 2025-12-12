@@ -333,16 +333,16 @@
         <p>Total Cremas</p>
     </div>
     <div class="crema-card" style="border-left-color: #f39c12;">
-        <h3 id="stock-bajo-cremas">{{ stock_bajo_cremas|default:"0" }}</h3>
-        <p>Stock Bajo</p>
+        <h3 id="stock-bajo-cremas">{{valor_total_cremas |default:"0" }}</h3>
+        <p>Precio total de venta</p>
     </div>
     <div class="crema-card" style="border-left-color: #27ae60;">
-        <h3 id="valor-total-cremas">${{ valor_total_cremas|default:"0" }}</h3>
+        <h3 id="valor-total-cremas">${{ valor_total_inv|default:"0" }}</h3>
         <p>Valor Inventario</p>
     </div>
     <div class="crema-card" style="border-left-color: #fd79a8;">
-        <h3 id="cremas-activas">{{ cremas_activas|default:"0" }}</h3>
-        <p>Productos Activos</p>
+        <h3 id="cremas-activas">{{ ganancia|default:"0" }}</h3>
+        <p>Ganancia neta</p>
     </div>
 </div>
 
@@ -354,6 +354,7 @@
                 <th>ID</th>
                 <th>Marca</th>
                 <th>Precio</th>
+                <th>Invertido</th>
                 <th>Cantidad</th>
                 <th>Acciones</th>
             </tr>
@@ -383,6 +384,7 @@
                     {% endif %}
                 </td>
                 <td><strong>${{ crema.precio }}</strong></td>
+                <td><strong>${{ crema.precio_inv }}</strong></td>
                 <td>
                     {% if crema.cantidad > 10 %}
                     <span class="badge badge-success">{{ crema.cantidad }}</span>

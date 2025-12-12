@@ -1,4 +1,4 @@
-# toma y analiza los ultimos codigos de deepseek de el chat nueva appadmin
+
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
@@ -24,7 +24,7 @@ def login_user(request):
         
         if user is not None:
             login(request, user)
-            # Redirige a la página que intentaba acceder o al dashboard
+            
             next_url = request.GET.get('next', 'dashboard')
             return redirect(next_url)
         else:
@@ -32,7 +32,7 @@ def login_user(request):
     
     return render(request, 'entrar.html')
 
-# Proteger el dashboard
+
 @login_required
 def panel_control(request):
     """Vista principal del panel de administración"""
@@ -99,7 +99,7 @@ def gestion_perfumes(request):
     
     total_perfumes_count = perfumes.objects.count()
     valor_total_perfumes = perfumes.objects.aggregate(total=Sum('precio'))['total'] or 0
-    valor_invertido_total=perfumes.objects.aggregate(total=Sum('precio_inv'))['total'] or 0
+    valor_invertido_total=perfumes.objects.aggregate(total=Sum('precio_inv'))['total'] 
     ganancia =valor_total_perfumes - valor_invertido_total
     
     context = {
@@ -108,7 +108,8 @@ def gestion_perfumes(request):
         'valor_invertido_perfumes': valor_invertido_total,
         'ganancia_perfumes':ganancia,
         'valor_total_perfumes': valor_total_perfumes,
-        'perfumes_activos': total_perfumes_count,
+        'valor_invertido':valor_invertido_total,
+        'ganancia':ganancia
     }
     
     return render(request, 'gestion_perfumes.html', context)
@@ -119,16 +120,18 @@ def gestion_desodorantes(request):
    
     lista_desodorantes = desodorantes.objects.all().order_by('-id')
     
-    # Estadísticas para desodorantes
-    total_desodorantes_count = desodorantes.objects.count()
-    valor_total_desodorantes = desodorantes.objects.aggregate(total=Sum('precio_inv'))['total'] or 0
     
+    total_desodorantes_count = desodorantes.objects.count()
+    valor_total_venta = desodorantes.objects.aggregate(total=Sum('precio'))['total'] or 0
+    valor_total_invertido = desodorantes.objects.aggregate(total=Sum('precio_inv'))['total'] 
+    ganancia =valor_total_venta-valor_total_invertido
     context = {
         'desodorantes': lista_desodorantes,
         'total_desodorantes': total_desodorantes_count,
         'stock_bajo_desodorantes': 0,
-        'valor_total_desodorantes': valor_total_desodorantes,
-        'desodorantes_activos': total_desodorantes_count,
+        'valor_total_desodorantes': valor_total_venta,
+        'valor_invertido':valor_total_invertido,
+        'ganancia':ganancia
     }
     
     return render(request, 'gestion_desodorantes.html', context)
@@ -142,13 +145,15 @@ def gestion_cremas(request):
     
     total_cremas_count = cremas.objects.count()
     valor_total_cremas = cremas.objects.aggregate(total=Sum('precio'))['total'] or 0
-    
+    valor_total_inv = cremas.objects.aggregate(total=Sum('precio_inv'))['total'] or 0
+    ganancia = valor_total_cremas - valor_total_inv
     context = {
         'cremas': lista_cremas,
         'total_cremas': total_cremas_count,
         'stock_bajo_cremas': 0,
         'valor_total_cremas': valor_total_cremas,
-        'cremas_activas': total_cremas_count,
+        'valor_total_inv': valor_total_inv ,
+        'ganancia':ganancia
     }
     
     return render(request, 'gestion_cremas.html', context)
@@ -262,7 +267,7 @@ def actualizar_fuente(request, viaje_fecha):
     try:
         fuentes_filtradas = Fuentes.objects.filter(fechaF=viaje_fecha)
         
-        # Crear lista de tuplas (fuente, inversion) - SOLUCIÓN CORRECTA
+       
         fuentes_data = []
         for fuente in fuentes_filtradas:
             fuentes_data.append({
@@ -272,7 +277,7 @@ def actualizar_fuente(request, viaje_fecha):
         
         if request.method == 'GET':
             return render(request, 'editar_fuentes.html', {
-                'fuentes_data': fuentes_data,  # Cambio clave aquí
+                'fuentes_data': fuentes_data,  
                 'viaje_fecha': viaje_fecha
             })
         
@@ -361,6 +366,66 @@ def agregar_perfume(request):
             }, status=500)
     
     return JsonResponse({'error': 'Método no permitido'}, status=405)
+
+
+def agregar_perfume(request):
+    """Vista para agregar un nuevo perfume"""
+    if request.method == 'POST':
+        try:
+            print(f"Datos recibidos para agregar perfume: {dict(request.POST)}")
+            print(f"Archivos recibidos: {dict(request.FILES)}")
+            
+            # Crear nuevo perfume
+            perfume = perfumes()
+            
+            # Asignar campos
+            if 'nombre' in request.POST:
+                perfume.nombre = request.POST['nombre']
+            
+            if 'descripcion' in request.POST:
+                perfume.descripcion = request.POST['descripcion']
+            
+            if 'precio' in request.POST:
+                perfume.precio = request.POST['precio']
+            
+            if 'precio_inv' in request.POST and request.POST['precio_inv']:
+                perfume.precio_inv = request.POST['precio_inv']
+            else:
+                perfume.precio_inv = None
+            
+            # IMPORTANTE: Guardar la cantidad en el campo correcto
+            if 'cantidad' in request.POST:
+                perfume.cantidad = request.POST['cantidad']  # Aquí debe ser perfume.cantidad
+            
+            if 'genero' in request.POST:
+                perfume.genero = request.POST['genero']
+            
+            if 'tamano' in request.POST:
+                perfume.tamano = request.POST['tamano']
+            
+            # Manejar imagen si se subió
+            if 'imagen' in request.FILES:
+                perfume.imagen = request.FILES['imagen']
+                print(f"Imagen subida: {request.FILES['imagen'].name}")
+            
+            perfume.save()
+            print(f"✅ Perfume '{perfume.nombre}' creado exitosamente")
+            print(f"🔢 Cantidad guardada: {perfume.cantidad}")
+            
+            return JsonResponse({
+                'success': True,
+                'message': f'Perfume "{perfume.nombre}" creado exitosamente',
+                'nombre': perfume.nombre
+            })
+            
+        except Exception as e:
+            print(f"❌ Error al agregar perfume: {str(e)}")
+            return JsonResponse({
+                'success': False,
+                'error': str(e)
+            }, status=500)
+    
+    return JsonResponse({'success': False, 'error': 'Método no permitido'}, status=405)
 
 
 def agregar_desodorante(request):
@@ -496,6 +561,7 @@ def obtener_perfume(request, nombre):
             'descripcion': perfume.descripcion,
             'precio': float(perfume.precio) if perfume.precio else 0,
             'precio_inv': float(perfume.precio_inv) if perfume.precio_inv else None,
+            'cantidad':perfume.cantidad,
             'genero': perfume.genero,
             'tamano': perfume.tamano,
             'imagen_url': perfume.imagen.url if perfume.imagen and hasattr(perfume.imagen, 'url') else None,
@@ -529,6 +595,13 @@ def editar_perfume(request, nombre):
                 perfume.precio_inv = request.POST['precio_inv']
             else:
                 perfume.precio_inv = None
+            
+            # CORRECCIÓN: Cambia esto
+            # if 'cantidad' in request.POST:
+            #     perfume.precio = request.POST['cantidad']  # ERROR AQUÍ
+            # POR ESTO:
+            if 'cantidad' in request.POST:
+                perfume.cantidad = request.POST['cantidad']  # CORREGIDO
             
             if 'genero' in request.POST:
                 perfume.genero = request.POST['genero']

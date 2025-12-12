@@ -328,16 +328,16 @@
         <p>Total Desodorantes</p>
     </div>
     <div class="desodorante-card" style="border-left-color: #f39c12;">
-        <h3 id="stock-bajo-desodorantes">{{ stock_bajo_desodorantes|default:"0" }}</h3>
-        <p>Stock Bajo</p>
+        <h3 id="stock-bajo-desodorantes">{{ valor_total_desodorantes|default:"0" }}</h3>
+        <p>Precio total de venta</p>
     </div>
     <div class="desodorante-card" style="border-left-color: #27ae60;">
-        <h3 id="valor-total-desodorantes">${{ valor_total_desodorantes|default:"0" }}</h3>
+        <h3 id="valor-total-desodorantes">${{ valor_invertido|default:"0" }}</h3>
         <p>Valor Inventario</p>
     </div>
     <div class="desodorante-card" style="border-left-color: #3498db;">
-        <h3 id="desodorantes-activos">{{ desodorantes_activos|default:"0" }}</h3>
-        <p>Productos Activos</p>
+        <h3 id="desodorantes-activos">{{ ganancia|default:"0" }}</h3>
+        <p>Ganancia neta</p>
     </div>
 </div>
 
@@ -349,6 +349,7 @@
                 <th>ID</th>
                 <th>Marca</th>
                 <th>Precio</th>
+                <th>Ivertido</th>
                 <th>Cantidad</th>
                 <th>Acciones</th>
             </tr>
@@ -382,6 +383,7 @@
                     {% endif %}
                 </td>
                 <td><strong>${{ desodorante.precio }}</strong></td>
+                <td><strong>${{ desodorante.precio_inv }}</strong></td>
                 <td>
                     {% if desodorante.cantidad > 10 %}
                     <span class="badge badge-success">{{ desodorante.cantidad }}</span>

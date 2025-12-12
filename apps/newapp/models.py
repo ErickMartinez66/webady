@@ -22,7 +22,7 @@ class perfumes(models.Model):
     genero = models.CharField(max_length=1, choices=TypeChoices.choices)
     tamano = models.IntegerField()
     imagen = models.ImageField(upload_to='perfumes/', null=True, blank=True)
-    
+    cantidad = models.IntegerField(null=True)
    
     
     def __str__(self):

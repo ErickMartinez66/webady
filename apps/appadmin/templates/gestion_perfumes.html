@@ -300,16 +300,16 @@
         <p>Total Perfumes</p>
     </div>
     <div class="perfume-card" style="border-left-color: #f39c12;">
-        <h3 id="stock-bajo">{{ stock_bajo_perfumes|default:"0" }}</h3>
-        <p>Stock Bajo</p>
+        <h3 id="stock-bajo">{{ valor_total_perfumes|default:"0" }}</h3>
+        <p>Precio total de venta</p>
     </div>
     <div class="perfume-card" style="border-left-color: #27ae60;">
-        <h3 id="valor-total">${{ valor_total_perfumes|default:"0" }}</h3>
+        <h3 id="valor-total">${{ valor_invertido|default:"0" }}</h3>
         <p>Valor Inventario</p>
     </div>
     <div class="perfume-card" style="border-left-color: #3498db;">
-        <h3 id="perfumes-activos">{{ perfumes_activos|default:"0" }}</h3>
-        <p>Productos Activos</p>
+        <h3 id="perfumes-activos">{{ ganancia|default:"0" }}</h3>
+        <p>Ganancia neta</p>
     </div>
 </div>
 
@@ -319,6 +319,8 @@
             <tr>
                 <th>Nombre</th>
                 <th>Precio</th>
+                <th>Invertido</th>
+                <th>Cantidad</th>
                 <th>Tamaño</th>
                 <th>Género</th>
                 <th>Acciones</th>
@@ -345,6 +347,16 @@
                     </div>
                 </td>
                 <td><strong>${{ perfume.precio }}</strong></td>
+                <td><strong>${{ perfume.precio_inv }}</strong></td>
+                <td>
+                    {% if perfume.cantidad > 10 %}
+                    <span class="badge badge-success">{{ perfume.cantidad }}</span>
+                    {% elif perfume.cantidad > 0 %}
+                    <span class="badge badge-warning">{{ perfume.cantidad }}</span>
+                    {% else %}
+                    <span class="badge badge-danger">{{ perfume.cantidad }}</span>
+                    {% endif %}
+                </td>
                 <td>{{ perfume.tamano }} ml</td>
                 <td>
                     {% if perfume.genero == 'M' %}
@@ -371,7 +383,7 @@
             </tr>
             {% empty %}
             <tr>
-                <td colspan="5" class="empty-state">
+                <td colspan="7" class="empty-state">
                     <h3>No hay perfumes registrados</h3>
                     <p>Comienza agregando el primer perfume.</p>
                     <button class="btn btn-primary" id="btnAbrirModalDesdeVacio">
@@ -416,6 +428,11 @@
             
             <div class="form-grid">
                 <div class="form-group">
+                    <label for="cantidadPerfume">Cantidad *</label>
+                    <input type="number" id="cantidadPerfume" name="cantidad" class="form-control" required min="0" value="0">
+                </div>
+                
+                <div class="form-group">
                     <label for="generoPerfume">Género *</label>
                     <select id="generoPerfume" name="genero" class="form-control" required>
                         <option value="">Seleccionar...</option>
@@ -424,7 +441,9 @@
                         <option value="U">Unisex</option>
                     </select>
                 </div>
-                
+            </div>
+            
+            <div class="form-grid">
                 <div class="form-group">
                     <label for="tamanoPerfume">Tamaño (ml) *</label>
                     <input type="number" id="tamanoPerfume" name="tamano" class="form-control" required min="1">
@@ -505,12 +524,14 @@ async function cargarDatosPerfume(nombre) {
         
         const perfume = data;
         console.log('✅ Datos recibidos:', perfume);
+        console.log('🔢 Cantidad recibida:', perfume.cantidad);
         
         // Llenar el formulario con los datos
         document.getElementById('nombrePerfume').value = perfume.nombre || '';
         document.getElementById('descripcionPerfume').value = perfume.descripcion || '';
         document.getElementById('precioPerfume').value = perfume.precio || '';
         document.getElementById('precioInvPerfume').value = perfume.precio_inv || '';
+        document.getElementById('cantidadPerfume').value = perfume.cantidad || 0;
         document.getElementById('generoPerfume').value = perfume.genero || '';
         document.getElementById('tamanoPerfume').value = perfume.tamano || '';
         document.getElementById('formAction').value = 'editar';
@@ -585,6 +606,9 @@ function abrirModalCrear() {
     // Permitir editar el campo nombre
     document.getElementById('nombrePerfume').readOnly = false;
     
+    // Establecer valor por defecto para cantidad
+    document.getElementById('cantidadPerfume').value = 0;
+    
     // Limpiar nombre de archivo
     document.getElementById('fileName').textContent = 'No hay archivo seleccionado';
     document.getElementById('fileLabelText').textContent = 'Seleccionar imagen';
@@ -612,6 +636,7 @@ function cerrarModal() {
     setTimeout(() => {
         formElement.reset();
         document.getElementById('nombrePerfume').readOnly = false;
+        document.getElementById('cantidadPerfume').value = 0;
         document.getElementById('fileName').textContent = 'No hay archivo seleccionado';
         document.getElementById('currentImageInfo').style.display = 'none';
         document.getElementById('formAction').value = 'agregar';
@@ -634,17 +659,27 @@ async function enviarFormularioPerfume() {
     // Validación básica
     const nombre = document.getElementById('nombrePerfume')?.value.trim();
     const precio = document.getElementById('precioPerfume')?.value;
+    const cantidad = document.getElementById('cantidadPerfume')?.value;
     const genero = document.getElementById('generoPerfume')?.value;
     const tamano = document.getElementById('tamanoPerfume')?.value;
     const formAction = document.getElementById('formAction').value;
     
-    if (!nombre || !precio || !genero || !tamano) {
+    console.log('📊 Valores del formulario ANTES de enviar:', {
+        nombre, precio, cantidad, genero, tamano, formAction
+    });
+    
+    if (!nombre || !precio || !cantidad || !genero || !tamano) {
         alert('❌ Por favor complete todos los campos obligatorios (*)');
         return false;
     }
     
     if (parseFloat(precio) <= 0) {
         alert('❌ El precio debe ser mayor a 0');
+        return false;
+    }
+    
+    if (parseInt(cantidad) < 0 || isNaN(cantidad)) {
+        alert('❌ La cantidad debe ser un número válido y no puede ser negativa');
         return false;
     }
     
@@ -656,6 +691,12 @@ async function enviarFormularioPerfume() {
     try {
         // Crear FormData
         const formData = new FormData(formElement);
+        
+        // Verificar que los datos estén en el FormData
+        console.log('📝 Datos en FormData:');
+        for (let [key, value] of formData.entries()) {
+            console.log(`${key}: ${value}`);
+        }
         
         // Determinar la URL correcta
         let url;
@@ -699,6 +740,8 @@ async function enviarFormularioPerfume() {
             console.error('Error parsing JSON:', e);
             throw new Error('Respuesta del servidor no válida');
         }
+        
+        console.log('📨 Respuesta del servidor:', data);
         
         if (data.success) {
             console.log('✅ Operación exitosa:', data.message);

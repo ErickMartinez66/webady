@@ -30,3 +30,7 @@ def vistacremas(request):
     }
     return render(request, 'cremas.html', context)
 
+# recuerda hacer los metodos para el filtrado
+
+    
+    
