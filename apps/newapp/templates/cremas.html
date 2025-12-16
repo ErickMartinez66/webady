@@ -577,29 +577,7 @@
             <p class="page-subtitle">Descubre nuestra colección premium de fragancias únicas creadas para momentos inolvidables</p>
         </div>
 
-        <div class="filters-container">
-            <div class="filters-title">
-                <i class="fas fa-sliders-h"></i>
-                Filtrar por categoría
-            </div>
-            <div class="filters">
-                <button class="filter-btn active">
-                    <i class="fas fa-th-large"></i>Todos
-                </button>
-                <button class="filter-btn">
-                    <i class="fas fa-venus"></i>Mujer
-                </button>
-                <button class="filter-btn">
-                    <i class="fas fa-mars"></i>Hombre
-                </button>
-                <button class="filter-btn">
-                    <i class="fas fa-venus-mars"></i>Unisex
-                </button>
-                <button class="filter-btn">
-                    <i class="fas fa-tag"></i>Ofertas
-                </button>
-            </div>
-        </div>
+       
 
         <div class="perfumes-grid">
             {% if cremas %}
@@ -630,13 +608,8 @@
                     
                     <div class="perfume-content">
                         <div class="perfume-header">
-                            <h3 class="perfume-nombre">{{ crema.id }}</h3>
-                            <span class="perfume-genero genero-{{ crema.genero|lower }}">
-                                {% if crema.genero == 'M' %}Hombre
-                                {% elif crema.genero == 'F' %}Mujer
-                                {% else %}Unisex
-                                {% endif %}
-                            </span>
+                            <h3 class="perfume-nombre">{{ crema.idcremas }}</h3>
+                            
                         </div>
                         
                         <p class="perfume-descripcion">{{ crema.descripcion }}</p>

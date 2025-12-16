@@ -7,546 +7,733 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Inter', 'Segoe UI', sans-serif;
-        }
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Inter', 'Segoe UI', sans-serif;
+    }
 
-        :root {
-            --primary: #7c5cfc;
-            --primary-dark: #6a4be3;
-            --primary-light: #f0edff;
-            --secondary: #ff6b95;
-            --accent: #00d2b8;
-            --dark: #1a1d29;
-            --light: #ffffff;
-            --gray-50: #f8fafc;
-            --gray-100: #f1f5f9;
-            --gray-200: #e2e8f0;
-            --gray-300: #cbd5e1;
-            --gray-400: #94a3b8;
-            --gray-500: #64748b;
-            --gray-600: #475569;
-            --text: #1e293b;
-            --text-light: #64748b;
-            --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
-            --shadow: 0 10px 25px -5px rgba(0,0,0,0.08);
-            --shadow-lg: 0 20px 40px -10px rgba(0,0,0,0.12);
-            --shadow-hover: 0 25px 50px -12px rgba(0,0,0,0.18);
-            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            --border-radius: 16px;
-            --border-radius-lg: 24px;
-        }
+    :root {
+        --primary: #7c5cfc;
+        --primary-dark: #6a4be3;
+        --primary-light: #f0edff;
+        --secondary: #ff6b95;
+        --accent: #00d2b8;
+        --dark: #1a1d29;
+        --light: #ffffff;
+        --gray-50: #f8fafc;
+        --gray-100: #f1f5f9;
+        --gray-200: #e2e8f0;
+        --gray-300: #cbd5e1;
+        --gray-400: #94a3b8;
+        --gray-500: #64748b;
+        --gray-600: #475569;
+        --text: #1e293b;
+        --text-light: #64748b;
+        --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+        --shadow: 0 10px 25px -5px rgba(0,0,0,0.08);
+        --shadow-lg: 0 20px 40px -10px rgba(0,0,0,0.12);
+        --shadow-hover: 0 25px 50px -12px rgba(0,0,0,0.18);
+        --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        --border-radius: 16px;
+        --border-radius-lg: 24px;
+        --whatsapp-green: #8a4bdbff;
+        --whatsapp-green-dark: #128c31ff;
+        --whatsapp-green-light: rgba(37, 211, 102, 0.1);
+    }
 
-        body {
-            background: linear-gradient(135deg, var(--gray-50) 0%, var(--gray-100) 100%);
-            color: var(--text);
-            min-height: 100vh;
-            line-height: 1.6;
-        }
+    body {
+        background: linear-gradient(135deg, var(--gray-50) 0%, var(--gray-100) 100%);
+        color: var(--text);
+        min-height: 100vh;
+        line-height: 1.6;
+    }
 
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
+    .container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 20px;
+    }
 
-        /* Header mejorado */
-        .header {
-            text-align: center;
-            margin-bottom: 50px;
-            padding: 60px 0 30px;
-            position: relative;
-        }
+    /* Header mejorado */
+    .header {
+        text-align: center;
+        margin-bottom: 50px;
+        padding: 60px 0 30px;
+        position: relative;
+    }
 
-        .header::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 200px;
-            height: 200px;
-            background: radial-gradient(circle, var(--primary-light) 0%, transparent 70%);
-            z-index: -1;
-        }
+    .header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 200px;
+        height: 200px;
+        background: radial-gradient(circle, var(--primary-light) 0%, transparent 70%);
+        z-index: -1;
+    }
 
-        .page-title {
-            font-size: 3.5rem;
-            font-weight: 800;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 16px;
-            letter-spacing: -0.02em;
-        }
+    .page-title {
+        font-size: 3.5rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 16px;
+        letter-spacing: -0.02em;
+    }
 
-        .page-subtitle {
-            font-size: 1.3rem;
-            color: var(--text-light);
-            max-width: 600px;
-            margin: 0 auto;
-            font-weight: 400;
-            line-height: 1.7;
-        }
+    .page-subtitle {
+        font-size: 1.3rem;
+        color: var(--text-light);
+        max-width: 600px;
+        margin: 0 auto;
+        font-weight: 400;
+        line-height: 1.7;
+    }
 
-        /* Filtros mejorados */
-        .filters-container {
-            background: var(--light);
-            border-radius: var(--border-radius-lg);
-            padding: 24px;
-            margin-bottom: 50px;
-            box-shadow: var(--shadow);
-            border: 1px solid var(--gray-200);
-        }
+    /* Filtros mejorados */
+    .filters-container {
+        background: var(--light);
+        border-radius: var(--border-radius-lg);
+        padding: 24px;
+        margin-bottom: 50px;
+        box-shadow: var(--shadow);
+        border: 1px solid var(--gray-200);
+    }
 
-        .filters-title {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: var(--text);
-            margin-bottom: 16px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
+    .filters-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--text);
+        margin-bottom: 16px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
 
-        .filters {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
+    .filters {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
 
-        .filter-btn {
-            padding: 12px 24px;
-            background: var(--gray-100);
-            border: 1px solid var(--gray-200);
-            border-radius: 12px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: var(--transition);
-            color: var(--text);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 0.95rem;
-            border: none;
-            outline: none;
-        }
+    .filter-btn {
+        padding: 12px 24px;
+        background: var(--gray-100);
+        border: 1px solid var(--gray-200);
+        border-radius: 12px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: var(--transition);
+        color: var(--text);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.95rem;
+        border: none;
+        outline: none;
+    }
 
-        .filter-btn.active, .filter-btn:hover {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow);
-        }
+    .filter-btn.active, .filter-btn:hover {
+        background: var(--primary);
+        color: white;
+        border-color: var(--primary);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow);
+    }
 
-        /* Grid de perfumes mejorado */
+    /* Grid de perfumes mejorado */
+    .perfumes-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 30px;
+        margin-bottom: 80px;
+    }
+
+    /* CAMBIO: perfume-card → perfume-item */
+    .perfume-item {
+        background: var(--light);
+        border-radius: var(--border-radius-lg);
+        overflow: hidden;
+        box-shadow: var(--shadow);
+        transition: var(--transition);
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        text-decoration: none;
+        color: inherit;
+        border: 1px solid var(--gray-200);
+    }
+
+    .perfume-item:hover {
+        transform: translateY(-8px);
+        box-shadow: var(--shadow-hover);
+        border-color: var(--primary-light);
+    }
+
+    .perfume-badge {
+        position: absolute;
+        top: 16px;
+        right: 16px;
+        background: linear-gradient(135deg, var(--secondary), #ff8fab);
+        color: white;
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        z-index: 2;
+        box-shadow: var(--shadow-sm);
+        pointer-events: none;
+    }
+
+    .badge-new {
+        background: linear-gradient(135deg, var(--accent), #00e6c3);
+    }
+
+    .badge-popular {
+        background: linear-gradient(135deg, #ff9f43, #ffbe76);
+    }
+
+    .badge-sale {
+        background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+    }
+
+    .perfume-imagen-container {
+        width: 100%;
+        height: 240px;
+        position: relative;
+        overflow: hidden;
+        background: linear-gradient(135deg, var(--primary-light), #e8f4ff);
+    }
+
+    .perfume-imagen {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--primary);
+        font-size: 4.5rem;
+        transition: var(--transition);
+        position: relative;
+        pointer-events: none;
+    }
+
+    .perfume-item:hover .perfume-imagen {
+        transform: scale(1.08);
+    }
+
+    .perfume-imagen::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 60%;
+        background: linear-gradient(to top, rgba(255,255,255,0.9), transparent);
+        pointer-events: none;
+    }
+
+    .perfume-imagen img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: var(--transition);
+        pointer-events: none;
+    }
+
+    .perfume-content {
+        padding: 28px;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        z-index: 1;
+    }
+
+    .perfume-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 16px;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    /* CAMBIO: desodorantes-nombre → perfume-nombre */
+    .perfume-nombre {
+        font-size: 1.5rem;
+        color: var(--dark);
+        font-weight: 700;
+        line-height: 1.3;
+        letter-spacing: -0.01em;
+        flex: 1;
+        min-width: 200px;
+    }
+
+    /* CAMBIO: desodorantes-genero → perfume-genero */
+    .perfume-genero {
+        display: inline-block;
+        padding: 6px 16px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        white-space: nowrap;
+    }
+
+    .genero-m {
+        background: rgba(124, 92, 252, 0.12);
+        color: var(--primary);
+        border: 1px solid rgba(124, 92, 252, 0.2);
+    }
+
+    .genero-f {
+        background: rgba(255, 107, 149, 0.12);
+        color: var(--secondary);
+        border: 1px solid rgba(255, 107, 149, 0.2);
+    }
+
+    .genero-u {
+        background: rgba(0, 210, 184, 0.12);
+        color: var(--accent);
+        border: 1px solid rgba(0, 210, 184, 0.2);
+    }
+
+    /* CAMBIO: desodorantes-descripcion → perfume-descripcion */
+    .perfume-descripcion {
+        color: var(--text-light);
+        line-height: 1.7;
+        margin-bottom: 24px;
+        font-size: 0.95rem;
+        flex-grow: 1;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    /* CAMBIO: desodorantes-details → perfume-details */
+    .perfume-details {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: auto;
+        padding-top: 20px;
+        border-top: 1px solid var(--gray-200);
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .perfume-marca {
+        font-size: 0.9rem;
+        color: var(--text-light);
+        background: var(--gray-100);
+        padding: 4px 12px;
+        border-radius: 6px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-weight: 500;
+    }
+
+    .perfume-precio {
+        font-size: 1.9rem;
+        font-weight: 800;
+        color: var(--primary);
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .perfume-precio::before {
+        content: '$';
+        font-size: 1.2rem;
+        font-weight: 600;
+    }
+
+    .perfume-tamano {
+        color: var(--text-light);
+        font-weight: 500;
+        font-size: 0.95rem;
+        background: var(--gray-100);
+        padding: 6px 12px;
+        border-radius: 8px;
+        white-space: nowrap;
+    }
+
+    /* BOTONES Y ENLACES */
+    .perfume-actions {
+        display: flex;
+        gap: 12px;
+        margin-top: 20px;
+        position: relative;
+        z-index: 10;
+    }
+
+    /* ESTILO ESPECÍFICO PARA WHATSAPP-LINK */
+    .whatsapp-link {
+        display: inline-flex !important;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        width: 100%;
+        padding: 16px 24px;
+        background: var(--whatsapp-green);
+        color: white !important;
+        text-decoration: none !important;
+        border-radius: 12px;
+        font-weight: 700;
+        font-size: 1rem;
+        transition: var(--transition);
+        box-shadow: 0 4px 16px rgba(124, 92, 252, 0.3);
+        border: none;
+        cursor: pointer;
+        position: relative;
+        z-index: 100;
+        font-family: inherit;
+        line-height: 1.5;
+        text-align: center;
+        min-height: 54px;
+        letter-spacing: -0.01em;
+    }
+
+    .whatsapp-link:hover {
+        background: var(--whatsapp-green-dark);
+        transform: translateY(-3px);
+        box-shadow: 0 8px 24px rgba(124, 92, 252, 0.3);
+        color: white !important;
+        text-decoration: none !important;
+    }
+
+    .whatsapp-link:active {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(124, 92, 252, 0.3);
+    }
+
+    .whatsapp-link i {
+        font-size: 1.4rem;
+        filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.1));
+    }
+
+    /* Efecto de pulso para el icono de WhatsApp */
+    .whatsapp-link:hover i {
+        animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+        0% {
+            transform: scale(1);
+        }
+        50% {
+            transform: scale(1.1);
+        }
+        100% {
+            transform: scale(1);
+        }
+    }
+
+    /* Botones generales - MANTENIDOS */
+    .btn {
+        padding: 14px 20px;
+        border: none;
+        border-radius: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transition);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        flex: 1;
+        font-size: 0.95rem;
+    }
+
+    .btn-primary {
+        background: var(--primary);
+        color: white;
+        box-shadow: 0 4px 12px rgba(124, 92, 252, 0.3);
+    }
+
+    .btn-primary:hover {
+        background: var(--primary-dark);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(124, 92, 252, 0.4);
+    }
+
+    .btn-secondary {
+        background: var(--gray-100);
+        color: var(--text);
+        border: 1px solid var(--gray-200);
+    }
+
+    .btn-secondary:hover {
+        background: var(--gray-200);
+        transform: translateY(-2px);
+    }
+
+    .btn-favorite.active {
+        background: rgba(255, 107, 149, 0.1);
+        color: var(--secondary);
+        border-color: rgba(255, 107, 149, 0.2);
+    }
+
+    /* Estado vacío mejorado */
+    .empty-state {
+        text-align: center;
+        padding: 100px 20px;
+        color: var(--text-light);
+        grid-column: 1 / -1;
+    }
+
+    .empty-state i {
+        font-size: 5rem;
+        margin-bottom: 24px;
+        color: var(--gray-300);
+        opacity: 0.7;
+    }
+
+    .empty-state h3 {
+        font-size: 2rem;
+        margin-bottom: 16px;
+        color: var(--dark);
+        font-weight: 700;
+    }
+
+    .empty-state p {
+        font-size: 1.1rem;
+        max-width: 500px;
+        margin: 0 auto;
+        line-height: 1.7;
+    }
+
+    /* Footer mejorado */
+    .footer {
+        text-align: center;
+        padding: 40px 0;
+        margin-top: 60px;
+        border-top: 1px solid var(--gray-200);
+        color: var(--text-light);
+        background: var(--light);
+        border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0;
+        box-shadow: 0 -5px 20px rgba(0,0,0,0.03);
+    }
+
+    /* Clase para botón activo */
+    .filter-btn.active {
+        background: var(--primary);
+        color: white;
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
         .perfumes-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 30px;
-            margin-bottom: 80px;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 24px;
         }
-
-        /* Tarjetas completamente rediseñadas */
-        .perfume-card {
-            background: var(--light);
-            border-radius: var(--border-radius-lg);
-            overflow: hidden;
-            box-shadow: var(--shadow);
-            transition: var(--transition);
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-            text-decoration: none;
-            color: inherit;
-            border: 1px solid var(--gray-200);
-            cursor: pointer;
-        }
-
-        .perfume-card:hover {
-            transform: translateY(-8px);
-            box-shadow: var(--shadow-hover);
-            border-color: var(--primary-light);
-        }
-
-        .perfume-badge {
-            position: absolute;
-            top: 16px;
-            right: 16px;
-            background: linear-gradient(135deg, var(--secondary), #ff8fab);
-            color: white;
-            padding: 6px 14px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            z-index: 2;
-            box-shadow: var(--shadow-sm);
-        }
-
-        .badge-new {
-            background: linear-gradient(135deg, var(--accent), #00e6c3);
-        }
-
-        .badge-popular {
-            background: linear-gradient(135deg, #ff9f43, #ffbe76);
-        }
-
-        .badge-sale {
-            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
-        }
-
-        .perfume-imagen-container {
-            width: 100%;
-            height: 240px;
-            position: relative;
-            overflow: hidden;
-            background: linear-gradient(135deg, var(--primary-light), #e8f4ff);
-        }
-
-        .perfume-imagen {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--primary);
-            font-size: 4.5rem;
-            transition: var(--transition);
-            position: relative;
-        }
-
-        .perfume-card:hover .perfume-imagen {
-            transform: scale(1.08);
-        }
-
-        .perfume-imagen::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 60%;
-            background: linear-gradient(to top, rgba(255,255,255,0.9), transparent);
-        }
-
-        .perfume-imagen img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: var(--transition);
-        }
-
-        .perfume-content {
-            padding: 28px;
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-            z-index: 1;
-        }
-
-        .perfume-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 16px;
-        }
-
-        .desodorantes-nombre {
-            font-size: 1.5rem;
-            color: var(--dark);
-            font-weight: 700;
-            margin-bottom: 8px;
-            line-height: 1.3;
-            letter-spacing: -0.01em;
-        }
-
-        .desodorantes-genero {
-            display: inline-block;
-            padding: 6px 16px;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .genero-m {
-            background: rgba(124, 92, 252, 0.12);
-            color: var(--primary);
-            border: 1px solid rgba(124, 92, 252, 0.2);
-        }
-
-        .genero-f {
-            background: rgba(255, 107, 149, 0.12);
-            color: var(--secondary);
-            border: 1px solid rgba(255, 107, 149, 0.2);
-        }
-
-        .genero-u {
-            background: rgba(0, 210, 184, 0.12);
-            color: var(--accent);
-            border: 1px solid rgba(0, 210, 184, 0.2);
-        }
-
-        .desodorantes-descripcion {
-            color: var(--text-light);
-            line-height: 1.7;
-            margin-bottom: 24px;
-            font-size: 0.95rem;
-            flex-grow: 1;
-            display: -webkit-box;
-            -webkit-line-clamp: 3;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-
-        .desodorantes-details {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: auto;
-            padding-top: 20px;
-            border-top: 1px solid var(--gray-200);
-            gap: 10px;
-        }
-
-        .perfume-marca {
-            font-size: 0.9rem;
-            color: var(--text-light);
-            background: var(--gray-100);
-            padding: 4px 12px;
-            border-radius: 6px;
-        }
-
-        .perfume-precio {
-            font-size: 1.9rem;
-            font-weight: 800;
-            color: var(--primary);
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        .perfume-precio::before {
-            content: '$';
-            font-size: 1.2rem;
-            font-weight: 600;
-        }
-
-        .perfume-tamano {
-            color: var(--text-light);
-            font-weight: 500;
-            font-size: 0.95rem;
-            background: var(--gray-100);
-            padding: 6px 12px;
-            border-radius: 8px;
-        }
-
-        .perfume-actions {
-            display: flex;
-            gap: 12px;
-            margin-top: 20px;
-        }
-
-        .btn {
+        
+        .whatsapp-link {
             padding: 14px 20px;
-            border: none;
-            border-radius: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: var(--transition);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            flex: 1;
             font-size: 0.95rem;
+            min-height: 50px;
         }
+    }
 
-        .btn-primary {
-            background: var(--primary);
-            color: white;
-            box-shadow: 0 4px 12px rgba(124, 92, 252, 0.3);
+    @media (max-width: 768px) {
+        .page-title {
+            font-size: 2.5rem;
         }
-
-        .btn-primary:hover {
-            background: var(--primary-dark);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(124, 92, 252, 0.4);
+        
+        .filters {
+            gap: 8px;
         }
-
-        .btn-secondary {
-            background: var(--gray-100);
-            color: var(--text);
-            border: 1px solid var(--gray-200);
+        
+        .filter-btn {
+            padding: 10px 18px;
+            font-size: 0.9rem;
         }
-
-        .btn-secondary:hover {
-            background: var(--gray-200);
-            transform: translateY(-2px);
+        
+        .perfumes-grid {
+            grid-template-columns: 1fr;
+            gap: 20px;
         }
-
-        .btn-favorite.active {
-            background: rgba(255, 107, 149, 0.1);
-            color: var(--secondary);
-            border-color: rgba(255, 107, 149, 0.2);
+        
+        .perfume-content {
+            padding: 24px;
         }
-
-        /* Estado vacío mejorado */
-        .empty-state {
-            text-align: center;
-            padding: 100px 20px;
-            color: var(--text-light);
-            grid-column: 1 / -1;
+        
+        .perfume-details {
+            flex-wrap: wrap;
+            justify-content: flex-start;
+            gap: 8px;
         }
-
-        .empty-state i {
-            font-size: 5rem;
-            margin-bottom: 24px;
-            color: var(--gray-300);
-            opacity: 0.7;
+        
+        .perfume-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 8px;
         }
+        
+        .perfume-genero {
+            align-self: flex-start;
+        }
+        
+        .whatsapp-link {
+            padding: 13px 18px;
+            font-size: 0.95rem;
+            min-height: 48px;
+        }
+        
+        .whatsapp-link i {
+            font-size: 1.3rem;
+        }
+    }
 
-        .empty-state h3 {
+    @media (max-width: 480px) {
+        .container {
+            padding: 0 16px;
+        }
+        
+        .page-title {
             font-size: 2rem;
-            margin-bottom: 16px;
-            color: var(--dark);
-            font-weight: 700;
         }
-
-        .empty-state p {
+        
+        .page-subtitle {
             font-size: 1.1rem;
-            max-width: 500px;
-            margin: 0 auto;
-            line-height: 1.7;
         }
+        
+        .filters-container {
+            padding: 20px;
+        }
+        
+        .perfume-actions {
+            flex-direction: column;
+        }
+        
+        .filter-btn {
+            flex: 1;
+            min-width: 120px;
+            justify-content: center;
+        }
+        
+        .filters {
+            justify-content: center;
+        }
+        
+        .whatsapp-link {
+            padding: 12px 16px;
+            font-size: 0.9rem;
+            min-height: 46px;
+        }
+        
+        .whatsapp-link i {
+            font-size: 1.2rem;
+        }
+        
+        .perfume-actions .btn {
+            width: 100%;
+            padding: 12px 16px;
+            font-size: 0.9rem;
+        }
+    }
 
-        /* Footer mejorado */
-        .footer {
-            text-align: center;
-            padding: 40px 0;
-            margin-top: 60px;
-            border-top: 1px solid var(--gray-200);
-            color: var(--text-light);
-            background: var(--light);
-            border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0;
-            box-shadow: 0 -5px 20px rgba(0,0,0,0.03);
-        }
+    /* Animaciones suaves - ACTUALIZADO */
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
 
-        /* Clase para botón activo */
-        .filter-btn.active {
-            background: var(--primary);
-            color: white;
-        }
+    /* CAMBIO: .perfume-card → .perfume-item */
+    .perfume-item {
+        animation: fadeIn 0.5s ease-out forwards;
+    }
 
-        /* Responsive */
-        @media (max-width: 1024px) {
-            .perfumes-grid {
-                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-                gap: 24px;
-            }
-        }
+    .perfume-item:nth-child(odd) {
+        animation-delay: 0.1s;
+    }
 
-        @media (max-width: 768px) {
-            .page-title {
-                font-size: 2.5rem;
-            }
-            
-            .filters {
-                gap: 8px;
-            }
-            
-            .filter-btn {
-                padding: 10px 18px;
-                font-size: 0.9rem;
-            }
-            
-            .perfumes-grid {
-                grid-template-columns: 1fr;
-                gap: 20px;
-            }
-            
-            .perfume-content {
-                padding: 24px;
-            }
-            
-            .desodorantes-details {
-                flex-wrap: wrap;
-                justify-content: flex-start;
-                gap: 8px;
-            }
-        }
+    .perfume-item:nth-child(even) {
+        animation-delay: 0.2s;
+    }
 
-        @media (max-width: 480px) {
-            .container {
-                padding: 0 16px;
-            }
-            
-            .page-title {
-                font-size: 2rem;
-            }
-            
-            .page-subtitle {
-                font-size: 1.1rem;
-            }
-            
-            .filters-container {
-                padding: 20px;
-            }
-            
-            .perfume-actions {
-                flex-direction: column;
-            }
-            
-            .filter-btn {
-                flex: 1;
-                min-width: 120px;
-                justify-content: center;
-            }
-            
-            .filters {
-                justify-content: center;
-            }
-        }
+    /* Mejoras para el formulario */
+    form {
+        margin: 0;
+    }
 
-        /* Animaciones suaves */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+    /* Estilo para cuando no hay imágenes */
+    .perfume-imagen .fa-venus,
+    .perfume-imagen .fa-mars,
+    .perfume-imagen .fa-venus-mars {
+        font-size: 5rem;
+        color: var(--primary);
+    }
 
-        .perfume-card {
-            animation: fadeIn 0.5s ease-out forwards;
-        }
+    /* FIX para elementos que podrían bloquear clicks */
+    .perfume-item * {
+        pointer-events: auto;
+    }
 
-        .perfume-card:nth-child(odd) {
-            animation-delay: 0.1s;
-        }
+    .perfume-imagen-container,
+    .perfume-badge,
+    .perfume-imagen,
+    .perfume-imagen img,
+    .perfume-imagen::after {
+        pointer-events: none;
+    }
 
-        .perfume-card:nth-child(even) {
-            animation-delay: 0.2s;
-        }
+    /* Asegurar z-index apropiado */
+    .perfume-item {
+        isolation: isolate;
+    }
 
-        /* Mejoras para el formulario */
-        form {
-            margin: 0;
-        }
+    .perfume-content {
+        position: relative;
+        z-index: 2;
+    }
 
-        /* Estilo para cuando no hay imágenes */
-        .perfume-imagen .fa-venus,
-        .perfume-imagen .fa-mars,
-        .perfume-imagen .fa-venus-mars {
-            font-size: 5rem;
-            color: var(--primary);
-        }
-    </style>
+    /* Asegurar que los enlaces sean clickeables */
+    .perfume-actions a {
+        position: relative;
+        z-index: 1000;
+        pointer-events: auto;
+    }
+
+    /* Efecto de elevación para el enlace de WhatsApp */
+    .whatsapp-link {
+        position: relative;
+        overflow: hidden;
+    }
+
+    .whatsapp-link::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(to bottom, rgba(255,255,255,0.1), transparent);
+        pointer-events: none;
+    }
+
+    /* Mejorar la visibilidad del texto */
+    .whatsapp-link span {
+        position: relative;
+        z-index: 2;
+    }
+
+    /* Asegurar que el icono esté alineado */
+    .whatsapp-link i {
+        position: relative;
+        z-index: 2;
+    }
+</style>
 </head>
 <body>
     <div class="container">
@@ -577,68 +764,70 @@
                 </div>
             </div>
         </form>
-
-        <div class="perfumes-grid">
-            {% if desodorantes %}
-                {% for desodorante in desodorantes %}
-                <a href="{% url 'desodorantes' %}" class="perfume-card">
-                    <!-- Badges dinámicos -->
-                    {% if forloop.counter <= 2 %}
-                    <div class="perfume-badge badge-new">Nuevo</div>
-                    {% elif forloop.counter <= 5 %}
-                    <div class="perfume-badge badge-popular">Popular</div>
-                    {% elif desodorante.precio < 70 %}
-                    <div class="perfume-badge badge-sale">Oferta</div>
+         <div class="perfumes-grid">
+    {% if desodorantes %}
+        {% for desodorante in desodorantes %}
+        <!-- Contenedor principal para cada desodorante -->
+        <div class="perfume-item">
+            
+            <!-- Badges dinámicos -->
+            {% if forloop.counter <= 2 %}
+            <div class="perfume-badge badge-new">Nuevo</div>
+            {% elif forloop.counter <= 5 %}
+            <div class="perfume-badge badge-popular">Popular</div>
+            {% elif desodorante.precio < 70 %}
+            <div class="perfume-badge badge-sale">Oferta</div>
+            {% endif %}
+            
+            <div class="perfume-imagen-container">
+                <div class="perfume-imagen">
+                    {% if desodorante.imagen %}
+                        <img src="{{ desodorante.imagen.url }}" alt="{{ desodorante.id }}">
+                    {% else %}
+                        {# Iconos según género mejorados #}
+                        {% if desodorante.genero == 'M' %}
+                            <i class="fas fa-mars"></i>
+                        {% elif desodorante.genero == 'F' %}
+                            <i class="fas fa-venus"></i>
+                        {% else %}
+                            <i class="fas fa-venus-mars"></i>
+                        {% endif %}
                     {% endif %}
-                    
-                    <div class="perfume-imagen-container">
-                        <div class="perfume-imagen">
-                            {% if desodorante.imagen %}
-                                <img src="{{ desodorante.imagen.url }}" alt="{{ desodorante.id }}">
-                            {% else %}
-                                {# Iconos según género mejorados #}
-                                {% if desodorante.genero == 'M' %}
-                                    <i class="fas fa-mars"></i>
-                                {% elif desodorante.genero == 'F' %}
-                                    <i class="fas fa-venus"></i>
-                                {% else %}
-                                    <i class="fas fa-venus-mars"></i>
-                                {% endif %}
-                            {% endif %}
-                        </div>
-                    </div>
-                    
-                    <div class="perfume-content">
-                        <div class="perfume-header">
-                            <h3 class="desodorantes-nombre">{{ desodorante.id }}</h3>
-                            <span class="desodorantes-genero genero-{{ desodorante.genero|lower }}">
-                                {% if desodorante.genero == 'M' %}Hombre
-                                {% elif desodorante.genero == 'F' %}Mujer
-                                {% else %}Unisex
-                                {% endif %}
-                            </span>
-                        </div>
-                        
-                        <p class="desodorantes-descripcion">{{ desodorante.descripcion }}</p>
-                        
-                        <div class="desodorantes-details">
-                            <div class="perfume-marca">{{ desodorante.marca }}</div>
-                            <div class="perfume-precio">{{ desodorante.precio }}</div>
-                            <div class="perfume-tamano">{{ desodorante.tamano }}ml</div>
-                        </div>
-                        
-                        <div class="perfume-actions">
-                            <button class="btn btn-primary" onclick="event.preventDefault(); location.href='{% url 'desodorantes' %}'">
-                                <i class="fas fa-shopping-cart"></i> Comprar ahora
-                            </button>
-                            <button class="btn btn-secondary btn-favorite" onclick="event.preventDefault(); toggleFavorite(this)">
-                                <i class="far fa-heart"></i>
-                            </button>
-                        </div>
-                    </div>
-                </a>
-                {% endfor %}
-            {% else %}
+                </div>
+            </div>
+            
+            <div class="perfume-content">
+                <div class="perfume-header">
+                    <h3 class="perfume-nombre">{{ desodorante.id }}</h3>
+                    <span class="perfume-genero genero-{{ desodorante.genero|lower }}">
+                        {% if desodorante.genero == 'M' %}Hombre
+                        {% elif desodorante.genero == 'F' %}Mujer
+                        {% else %}Unisex
+                        {% endif %}
+                    </span>
+                </div>
+                
+                <p class="perfume-descripcion">{{ desodorante.descripcion }}</p>
+                
+                <div class="perfume-details">
+                    <div class="perfume-marca">{{ desodorante.marca }}</div>
+                    <div class="perfume-precio">{{ desodorante.precio }}</div>
+                    <div class="perfume-tamano">{{ desodorante.tamano }}ml</div>
+                </div>
+                
+                <div class="perfume-actions">
+                    <!-- Enlace de WhatsApp con parámetros del desodorante -->
+                    <a href="https://wa.me/5358661322?text=🛒%20SOLICITO%20COMPRA%0A%0AProducto:%20{{ desodorante.id }}%0AMarca:%20{{ desodorante.marca }}%0APrecio:%20${{ desodorante.precio }}%0ATamaño:%20{{ desodorante.tamano }}ml%0A%0A¡Hola!%20Quiero%20comprar%20este%20desodorante.%20¿Podrían%20ayudarme?"
+                       target="_blank"
+                       class="whatsapp-link">
+                       <i class="fab fa-whatsapp"></i> Comprar por WhatsApp
+                    </a>
+                </div>
+            </div>
+        </div> <!-- Cierre de perfume-item -->
+        {% endfor %}
+    {% else %}
+        
                 <div class="empty-state">
                     <i class="fas fa-wind"></i>
                     <h3>No hay perfumes disponibles</h3>
@@ -646,7 +835,8 @@
                 </div>
             {% endif %}
         </div>
-
+        
+          
         <div class="footer">
             <p>© 2024 Esencias Exclusivas. Todos los derechos reservados. | Crafted with <i class="fas fa-heart" style="color: var(--secondary);"></i></p>
         </div>
