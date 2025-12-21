@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -142,7 +141,44 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 3rem;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .producto-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .producto-card:hover .producto-img img {
+            transform: scale(1.05);
+        }
+
+        /* Mensaje de respaldo si la imagen no carga */
+        .producto-img::before {
+            content: "Imagen no disponible";
+            position: absolute;
+            color: #666;
+            font-size: 0.9rem;
+            display: none;
+        }
+
+        .producto-img img:not([src]), 
+        .producto-img img[src=""], 
+        .producto-img img.broken {
+            display: none;
+        }
+
+        .producto-img img:not([src]) + .producto-img::before,
+        .producto-img img[src=""] + .producto-img::before,
+        .producto-img img.broken + .producto-img::before {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
         }
 
         .producto-info {
@@ -252,45 +288,46 @@
     <section class="productos" id="productos">
         <h2 class="section-title">Nuestros Productos Destacados</h2>
         <div class="productos-grid">
-            <!-- Producto 1 -->
+            <!-- Producto 1: Perfumes -->
             <a href="{% url 'perfumes' %}" class="producto-card">
-                <div class="producto-img">🌸</div>
+                <div class="producto-img">
+                    <!-- Imagen de perfume - Unsplash -->
+                    <img src="https://images.unsplash.com/photo-1541643600914-78b084683601?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Botellas de perfume elegantes sobre mármol">
+                </div>
                 <div class="producto-info">
                     <h3 class="producto-nombre">Perfumes</h3>
-                    <p class="producto-desc">Fragancia y colonias de diferentes tipos </p>
+                    <p class="producto-desc">Fragancia y colonias de diferentes tipos</p>
                     <span class="producto-link">Ver perfumes</span>
                 </div>
             </a>
 
-             <a href="{% url 'desodorantes' %}" class="producto-card">
-                <div class="producto-img">🌸</div>
+            <!-- Producto 2: Desodorantes -->
+            <a href="{% url 'desodorantes' %}" class="producto-card">
+                <div class="producto-img">
+                    <!-- Imagen de desodorantes - Unsplash -->
+                    <img src="https://images.unsplash.com/photo-1631729371254-42c2892f0e6e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Desodorantes en spray y roll-on sobre fondo blanco">
+                </div>
                 <div class="producto-info">
-                    <h3 class="producto-nombre">desodorantes</h3>
-                    <p class="producto-desc">En barra , en gel y espray </p>
+                    <h3 class="producto-nombre">Desodorantes</h3>
+                    <p class="producto-desc">En barra, en gel y espray</p>
                     <span class="producto-link">Ver desodorantes</span>
                 </div>
             </a>
 
-            <!-- Producto 3 -->
+            <!-- Producto 3: Cremas -->
             <a href="{% url 'cremas' %}" class="producto-card">
-                <div class="producto-img">🔥</div>
+                <div class="producto-img">
+                    <!-- Imagen de cremas - Unsplash -->
+                    <img src="https://images.unsplash.com/photo-1556228578-9c360e1d8d34?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Cremas y productos de cuidado facial sobre fondo blanco">
+                </div>
                 <div class="producto-info">
-                    <h3 class="producto-nombre">cremas</h3>
-                    <p class="producto-desc">Cremas idratantespara la piel y otros tipos</p>
+                    <h3 class="producto-nombre">Cremas</h3>
+                    <p class="producto-desc">Cremas hidratantes para la piel y otros tipos</p>
                     <span class="producto-link">Ver cremas</span>
                 </div>
             </a>
 
-            <!-- Producto 4 -->
-            <a href="producto-citrus-fresh.html" class="producto-card">
-                <div class="producto-img">🍋</div>
-                <div class="producto-info">
-                    <h3 class="producto-nombre">Citrus Fresh</h3>
-                    <p class="producto-desc">Energizante combinación de cítricos y hierbas</p>
-                    <div class="producto-precio">$69.99</div>
-                    <span class="producto-link">Ver detalles</span>
-                </div>
-            </a>
+            <!-- Producto 4: Opcional - para agregar más productos -->
         </div>
     </section>
 
@@ -345,6 +382,14 @@
                 document.querySelector('#productos').scrollIntoView({
                     behavior: 'smooth'
                 });
+            });
+
+            // Detectar imágenes rotas y mostrar mensaje de respaldo
+            document.querySelectorAll('.producto-img img').forEach(img => {
+                img.onerror = function() {
+                    this.classList.add('broken');
+                    console.log('Imagen no cargada:', this.src);
+                };
             });
         });
     </script>

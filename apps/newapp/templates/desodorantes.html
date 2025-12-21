@@ -238,6 +238,7 @@
         height: 60%;
         background: linear-gradient(to top, rgba(255,255,255,0.9), transparent);
         pointer-events: none;
+        display: none; /* Añade esta línea */
     }
 
     .perfume-imagen img {
@@ -765,7 +766,7 @@
             </div>
         </form>
          <div class="perfumes-grid">
-    {% if desodorantes %}
+     {% if desodorantes %}
         {% for desodorante in desodorantes %}
         <!-- Contenedor principal para cada desodorante -->
         <div class="perfume-item">
@@ -817,7 +818,7 @@
                 
                 <div class="perfume-actions">
                     <!-- Enlace de WhatsApp con parámetros del desodorante -->
-                    <a href="https://wa.me/5358661322?text=🛒%20SOLICITO%20COMPRA%0A%0AProducto:%20{{ desodorante.id }}%0AMarca:%20{{ desodorante.marca }}%0APrecio:%20${{ desodorante.precio }}%0ATamaño:%20{{ desodorante.tamano }}ml%0A%0A¡Hola!%20Quiero%20comprar%20este%20desodorante.%20¿Podrían%20ayudarme?"
+                    <a href="https://wa.me/5354912292?text=🛒%20SOLICITO%20COMPRA%0A%0AProducto:%20{{ desodorante.id }}%0AMarca:%20{{ desodorante.marca }}%0APrecio:%20${{ desodorante.precio }}%0ATamaño:%20{{ desodorante.tamano }}ml%0A%0A¡Hola!%20Quiero%20comprar%20este%20desodorante.%20¿Podrían%20ayudarme?"
                        target="_blank"
                        class="whatsapp-link">
                        <i class="fab fa-whatsapp"></i> Comprar por WhatsApp
