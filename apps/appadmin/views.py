@@ -1,13 +1,12 @@
 
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.db.models import Sum, Count, Q
+from django.db.models import Sum
 from django.urls import reverse
 from apps.newapp.models import perfumes, desodorantes, cremas
 from apps.appadmin.models import Viaje,Fuentes
 from django.contrib.auth import authenticate,login
-from apps.appadmin.forms import formviaje
 from django.http import HttpResponseRedirect, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
@@ -393,9 +392,9 @@ def agregar_perfume(request):
             else:
                 perfume.precio_inv = None
             
-            # IMPORTANTE: Guardar la cantidad en el campo correcto
+            
             if 'cantidad' in request.POST:
-                perfume.cantidad = request.POST['cantidad']  # Aquí debe ser perfume.cantidad
+                perfume.cantidad = request.POST['cantidad']  
             
             if 'genero' in request.POST:
                 perfume.genero = request.POST['genero']
@@ -403,7 +402,7 @@ def agregar_perfume(request):
             if 'tamano' in request.POST:
                 perfume.tamano = request.POST['tamano']
             
-            # Manejar imagen si se subió
+            
             if 'imagen' in request.FILES:
                 perfume.imagen = request.FILES['imagen']
                 print(f"Imagen subida: {request.FILES['imagen'].name}")
